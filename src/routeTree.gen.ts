@@ -9,38 +9,187 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as LearnRouteImport } from './routes/learn'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as QuestionsIndexRouteImport } from './routes/questions.index'
+import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
+import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
+import { Route as ProfileIdRouteImport } from './routes/profile.$id'
+import { Route as AuthenticatedUploadProjectRouteImport } from './routes/_authenticated/upload-project'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedAskQuestionRouteImport } from './routes/_authenticated/ask-question'
 
+const LearnRoute = LearnRouteImport.update({
+  id: '/learn',
+  path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const QuestionsIndexRoute = QuestionsIndexRouteImport.update({
+  id: '/questions/',
+  path: '/questions/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProjectsIdRoute = ProjectsIdRouteImport.update({
+  id: '/projects/$id',
+  path: '/projects/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileIdRoute = ProfileIdRouteImport.update({
+  id: '/profile/$id',
+  path: '/profile/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedUploadProjectRoute =
+  AuthenticatedUploadProjectRouteImport.update({
+    id: '/upload-project',
+    path: '/upload-project',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAskQuestionRoute =
+  AuthenticatedAskQuestionRouteImport.update({
+    id: '/ask-question',
+    path: '/ask-question',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/learn': typeof LearnRoute
+  '/ask-question': typeof AuthenticatedAskQuestionRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/upload-project': typeof AuthenticatedUploadProjectRoute
+  '/profile/$id': typeof ProfileIdRoute
+  '/projects/$id': typeof ProjectsIdRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/questions/': typeof QuestionsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/learn': typeof LearnRoute
+  '/ask-question': typeof AuthenticatedAskQuestionRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/upload-project': typeof AuthenticatedUploadProjectRoute
+  '/profile/$id': typeof ProfileIdRoute
+  '/projects/$id': typeof ProjectsIdRoute
+  '/projects': typeof ProjectsIndexRoute
+  '/questions': typeof QuestionsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/learn': typeof LearnRoute
+  '/_authenticated/ask-question': typeof AuthenticatedAskQuestionRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/upload-project': typeof AuthenticatedUploadProjectRoute
+  '/profile/$id': typeof ProfileIdRoute
+  '/projects/$id': typeof ProjectsIdRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/questions/': typeof QuestionsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/learn'
+    | '/ask-question'
+    | '/dashboard'
+    | '/upload-project'
+    | '/profile/$id'
+    | '/projects/$id'
+    | '/projects/'
+    | '/questions/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/learn'
+    | '/ask-question'
+    | '/dashboard'
+    | '/upload-project'
+    | '/profile/$id'
+    | '/projects/$id'
+    | '/projects'
+    | '/questions'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/learn'
+    | '/_authenticated/ask-question'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/upload-project'
+    | '/profile/$id'
+    | '/projects/$id'
+    | '/projects/'
+    | '/questions/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  LearnRoute: typeof LearnRoute
+  ProfileIdRoute: typeof ProfileIdRoute
+  ProjectsIdRoute: typeof ProjectsIdRoute
+  ProjectsIndexRoute: typeof ProjectsIndexRoute
+  QuestionsIndexRoute: typeof QuestionsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/learn': {
+      id: '/learn'
+      path: '/learn'
+      fullPath: '/learn'
+      preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,22 +197,83 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/questions/': {
+      id: '/questions/'
+      path: '/questions'
+      fullPath: '/questions/'
+      preLoaderRoute: typeof QuestionsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/projects/$id': {
+      id: '/projects/$id'
+      path: '/projects/$id'
+      fullPath: '/projects/$id'
+      preLoaderRoute: typeof ProjectsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile/$id': {
+      id: '/profile/$id'
+      path: '/profile/$id'
+      fullPath: '/profile/$id'
+      preLoaderRoute: typeof ProfileIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/upload-project': {
+      id: '/_authenticated/upload-project'
+      path: '/upload-project'
+      fullPath: '/upload-project'
+      preLoaderRoute: typeof AuthenticatedUploadProjectRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/ask-question': {
+      id: '/_authenticated/ask-question'
+      path: '/ask-question'
+      fullPath: '/ask-question'
+      preLoaderRoute: typeof AuthenticatedAskQuestionRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAskQuestionRoute: typeof AuthenticatedAskQuestionRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedUploadProjectRoute: typeof AuthenticatedUploadProjectRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAskQuestionRoute: AuthenticatedAskQuestionRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedUploadProjectRoute: AuthenticatedUploadProjectRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  LearnRoute: LearnRoute,
+  ProfileIdRoute: ProfileIdRoute,
+  ProjectsIdRoute: ProjectsIdRoute,
+  ProjectsIndexRoute: ProjectsIndexRoute,
+  QuestionsIndexRoute: QuestionsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
