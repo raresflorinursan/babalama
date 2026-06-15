@@ -73,7 +73,7 @@ function ProfilePage() {
           <p className="text-sm text-muted-foreground">Noch keine Projekte. <Link to="/upload-project" className="text-primary hover:underline">Eines hochladen?</Link></p>
         ) : (
           <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {(projects ?? []).map((p: any) => <ProjectCard key={p.id} project={p} />)}
+            {(projects ?? []).map((p: any, i: number) => <ProjectCard key={p.id} project={p} index={i} />)}
           </div>
         )}
       </section>
