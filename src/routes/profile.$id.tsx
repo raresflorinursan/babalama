@@ -4,6 +4,7 @@ import { Github, Globe } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { supabase } from "@/integrations/supabase/client";
+import { safeUrl } from "@/lib/safe-url";
 
 export const Route = createFileRoute("/profile/$id")({
   head: () => ({
@@ -51,8 +52,8 @@ function ProfilePage() {
               {profile.username && <p className="text-sm text-muted-foreground">@{profile.username}</p>}
               {profile.bio && <p className="mt-2 max-w-xl text-sm text-muted-foreground">{profile.bio}</p>}
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-                {profile.github_url && <a href={profile.github_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Github className="h-4 w-4" /> GitHub</a>}
-                {profile.website_url && <a href={profile.website_url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Globe className="h-4 w-4" /> Website</a>}
+                {safeUrl(profile.github_url) && <a href={safeUrl(profile.github_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Github className="h-4 w-4" /> GitHub</a>}
+                {safeUrl(profile.website_url) && <a href={safeUrl(profile.website_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Globe className="h-4 w-4" /> Website</a>}
               </div>
               {profile.skills && profile.skills.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5">
