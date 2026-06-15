@@ -8,7 +8,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
-import { Code2 } from "lucide-react";
+import { BrandMark } from "@/components/BrandMark";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -34,9 +34,7 @@ function AuthPage() {
       <section className="bg-gradient-hero">
         <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-md flex-col items-center justify-center px-4 py-16">
           <Link to="/" className="mb-6 flex items-center gap-2 font-semibold">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-gradient-primary shadow-glow">
-              <Code2 className="h-4 w-4 text-primary-foreground" />
-            </span>
+            <BrandMark className="h-9 w-9" />
             <span className="text-lg">Solvix</span>
           </Link>
 

@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Code2 } from "lucide-react";
+import { BrandMark } from "@/components/BrandMark";
 
 export function Footer() {
   return (
@@ -7,9 +7,7 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-2 font-semibold">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-gradient-primary">
-              <Code2 className="h-4 w-4 text-primary-foreground" />
-            </span>
+            <BrandMark />
             Solvix
           </div>
           <p className="mt-3 max-w-md text-sm text-muted-foreground">
