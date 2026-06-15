@@ -39,52 +39,52 @@
   --color-sidebar-ring: var(--sidebar-ring);
 }
 
-/* Solvix — dark, modern, electric blue */
+/* Solvix — clean SaaS dark, electric blue */
 :root {
   --radius: 0.75rem;
 
-  --background: oklch(0.14 0.02 265);
+  --background: oklch(0.08 0.01 250);
   --foreground: oklch(0.97 0.005 250);
 
-  --card: oklch(0.18 0.022 265);
+  --card: oklch(0.13 0.018 260);
   --card-foreground: oklch(0.97 0.005 250);
 
-  --popover: oklch(0.17 0.022 265);
+  --popover: oklch(0.12 0.018 260);
   --popover-foreground: oklch(0.97 0.005 250);
 
   --primary: oklch(0.65 0.21 258);
   --primary-foreground: oklch(0.99 0 0);
   --primary-glow: oklch(0.78 0.16 250);
 
-  --secondary: oklch(0.24 0.025 265);
+  --secondary: oklch(0.18 0.018 260);
   --secondary-foreground: oklch(0.97 0.005 250);
 
-  --muted: oklch(0.22 0.02 265);
-  --muted-foreground: oklch(0.7 0.02 260);
+  --muted: oklch(0.16 0.015 260);
+  --muted-foreground: oklch(0.68 0.025 255);
 
-  --accent: oklch(0.28 0.05 258);
+  --accent: oklch(0.18 0.045 258);
   --accent-foreground: oklch(0.97 0.005 250);
 
   --destructive: oklch(0.62 0.22 25);
   --destructive-foreground: oklch(0.99 0 0);
 
-  --border: oklch(0.27 0.02 265);
-  --input: oklch(0.24 0.02 265);
+  --border: oklch(0.22 0.018 260);
+  --input: oklch(0.16 0.015 260);
   --ring: oklch(0.65 0.21 258);
 
-  --sidebar: oklch(0.16 0.022 265);
+  --sidebar: oklch(0.1 0.014 260);
   --sidebar-foreground: oklch(0.97 0.005 250);
   --sidebar-primary: oklch(0.65 0.21 258);
   --sidebar-primary-foreground: oklch(0.99 0 0);
-  --sidebar-accent: oklch(0.22 0.02 265);
+  --sidebar-accent: oklch(0.16 0.015 260);
   --sidebar-accent-foreground: oklch(0.97 0.005 250);
-  --sidebar-border: oklch(0.27 0.02 265);
+  --sidebar-border: oklch(0.22 0.018 260);
   --sidebar-ring: oklch(0.65 0.21 258);
 
   --gradient-primary: linear-gradient(135deg, oklch(0.65 0.21 258) 0%, oklch(0.78 0.16 250) 100%);
-  --gradient-hero: radial-gradient(1200px 600px at 50% -10%, oklch(0.45 0.18 258 / 0.35), transparent 60%);
-  --shadow-glow: 0 0 60px -10px oklch(0.65 0.21 258 / 0.45);
-  --shadow-card: 0 10px 30px -10px oklch(0.05 0.02 265 / 0.6);
+  --gradient-hero: radial-gradient(900px 420px at 50% 0%, oklch(0.65 0.21 258 / 0.08), transparent 70%);
+  --shadow-glow: 0 18px 45px -22px oklch(0.65 0.21 258 / 0.55);
+  --shadow-card: 0 18px 40px -28px oklch(0.02 0.01 250 / 0.75);
 }
 
 @layer base {

@@ -20,32 +20,28 @@ function Home() {
   return (
     <SiteShell>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-hero">
-        <div className="mx-auto max-w-7xl px-4 pb-24 pt-20 sm:px-6 lg:pt-32">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3 py-1 text-xs text-muted-foreground shadow-card-elegant backdrop-blur">
+      <section className="relative flex min-h-screen items-center overflow-hidden bg-gradient-hero">
+        <div className="mx-auto w-full max-w-7xl px-4 py-32 sm:px-6 lg:py-40">
+          <div className="mx-auto max-w-4xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-xs font-medium text-cyan-200 backdrop-blur">
               <Sparkles className="h-3.5 w-3.5 text-primary-glow" />
-              Community für Coding, KI & SaaS
+              Jetzt in Beta
             </div>
-            <h1 className="mt-6 text-balance text-4xl font-semibold tracking-tight sm:text-6xl">
-              Entdecke, teile und baue{" "}
-              <span className="text-gradient">Coding- und KI-Projekte.</span>
+            <h1 className="mt-10 text-balance text-5xl font-bold tracking-tight text-foreground sm:text-7xl lg:text-8xl">
+              Baue Coding- & KI-Projekte.
+              <span className="block text-gradient">Mit echter Community.</span>
             </h1>
-            <p className="mx-auto mt-5 max-w-2xl text-pretty text-base text-muted-foreground sm:text-lg">
-              Solvix ist eine Plattform für Menschen, die lernen, bauen und sich von echten
-              Projekten inspirieren lassen wollen.
+            <p className="mx-auto mt-8 max-w-2xl text-pretty text-base leading-8 text-[#94a3b8] sm:text-lg">
+              Entdecke echte Projekte, stelle Coding-Fragen und lerne mit Menschen, die wirklich bauen.
             </p>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" className="bg-gradient-primary shadow-glow hover:opacity-90">
+            <div className="mt-12 flex flex-wrap items-center justify-center gap-5">
+              <Button asChild size="lg" className="bg-primary text-white shadow-[0_18px_45px_-18px_oklch(0.65_0.21_258_/_0.75)] hover:bg-primary/90">
                 <Link to="/projects">
                   Projekte entdecken <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>
-              <Button asChild size="lg" variant="outline">
+              <Button asChild size="lg" variant="outline" className="border-white/20 bg-transparent text-white hover:bg-white/5">
                 <Link to="/upload-project">Eigenes Projekt hochladen</Link>
-              </Button>
-              <Button asChild size="lg" variant="ghost">
-                <Link to="/questions">Coding-Frage stellen</Link>
               </Button>
             </div>
           </div>
