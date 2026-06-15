@@ -20,7 +20,7 @@ function Home() {
   return (
     <SiteShell>
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-hero">
+      <section className="relative z-10 overflow-hidden bg-gradient-hero">
         <div className="mx-auto max-w-7xl px-4 pb-24 pt-20 sm:px-6 lg:pt-32">
           <div className="mx-auto max-w-3xl text-center">
             <div className="inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/60 px-3 py-1 text-xs text-muted-foreground shadow-card-elegant backdrop-blur">
@@ -53,7 +53,7 @@ function Home() {
       </section>
 
       {/* WHY */}
-      <section className="border-t border-border/60 bg-background">
+      <section className="relative z-10 bg-transparent">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="mx-auto max-w-2xl text-center">
             <h2 className="text-3xl font-semibold tracking-tight sm:text-4xl">
@@ -89,7 +89,7 @@ function Home() {
       </section>
 
       {/* HOW */}
-      <section className="border-t border-border/60 bg-background">
+      <section className="relative z-10 bg-transparent">
         <div className="mx-auto max-w-7xl px-4 py-20 sm:px-6">
           <div className="grid gap-10 lg:grid-cols-2 lg:items-center">
             <div>
@@ -112,7 +112,7 @@ function Home() {
       </section>
 
       {/* CTA */}
-      <section className="border-t border-border/60 bg-background">
+      <section className="relative z-10 bg-transparent">
         <div className="mx-auto max-w-5xl px-4 py-20 sm:px-6">
           <div className="rounded-2xl border border-border bg-card p-10 text-center shadow-card-elegant">
             <h2 className="text-2xl font-semibold sm:text-3xl">

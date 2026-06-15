@@ -3,7 +3,7 @@ import { Code2 } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/60 bg-background">
+    <footer className="relative z-10 bg-transparent">
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 md:grid-cols-4">
         <div className="md:col-span-2">
           <div className="flex items-center gap-2 font-semibold">
@@ -33,7 +33,7 @@ export function Footer() {
           </ul>
         </div>
       </div>
-      <div className="border-t border-border/60">
+      <div>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 text-xs text-muted-foreground sm:px-6">
           <span>© {new Date().getFullYear()} Solvix</span>
           <span>Build with code & curiosity.</span>
