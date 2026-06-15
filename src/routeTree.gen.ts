@@ -18,6 +18,7 @@ import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
 import { Route as AuthenticatedUploadProjectRouteImport } from './routes/_authenticated/upload-project'
+import { Route as AuthenticatedEditProfileRouteImport } from './routes/_authenticated/edit-profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAskQuestionRouteImport } from './routes/_authenticated/ask-question'
 
@@ -66,6 +67,12 @@ const AuthenticatedUploadProjectRoute =
     path: '/upload-project',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedEditProfileRoute =
+  AuthenticatedEditProfileRouteImport.update({
+    id: '/edit-profile',
+    path: '/edit-profile',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
@@ -84,6 +91,7 @@ export interface FileRoutesByFullPath {
   '/learn': typeof LearnRoute
   '/ask-question': typeof AuthenticatedAskQuestionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/edit-profile': typeof AuthenticatedEditProfileRoute
   '/upload-project': typeof AuthenticatedUploadProjectRoute
   '/profile/$id': typeof ProfileIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -96,6 +104,7 @@ export interface FileRoutesByTo {
   '/learn': typeof LearnRoute
   '/ask-question': typeof AuthenticatedAskQuestionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/edit-profile': typeof AuthenticatedEditProfileRoute
   '/upload-project': typeof AuthenticatedUploadProjectRoute
   '/profile/$id': typeof ProfileIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -110,6 +119,7 @@ export interface FileRoutesById {
   '/learn': typeof LearnRoute
   '/_authenticated/ask-question': typeof AuthenticatedAskQuestionRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/edit-profile': typeof AuthenticatedEditProfileRoute
   '/_authenticated/upload-project': typeof AuthenticatedUploadProjectRoute
   '/profile/$id': typeof ProfileIdRoute
   '/projects/$id': typeof ProjectsIdRoute
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/ask-question'
     | '/dashboard'
+    | '/edit-profile'
     | '/upload-project'
     | '/profile/$id'
     | '/projects/$id'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/ask-question'
     | '/dashboard'
+    | '/edit-profile'
     | '/upload-project'
     | '/profile/$id'
     | '/projects/$id'
@@ -149,6 +161,7 @@ export interface FileRouteTypes {
     | '/learn'
     | '/_authenticated/ask-question'
     | '/_authenticated/dashboard'
+    | '/_authenticated/edit-profile'
     | '/_authenticated/upload-project'
     | '/profile/$id'
     | '/projects/$id'
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedUploadProjectRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/edit-profile': {
+      id: '/_authenticated/edit-profile'
+      path: '/edit-profile'
+      fullPath: '/edit-profile'
+      preLoaderRoute: typeof AuthenticatedEditProfileRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/dashboard': {
       id: '/_authenticated/dashboard'
       path: '/dashboard'
@@ -252,12 +272,14 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAskQuestionRoute: typeof AuthenticatedAskQuestionRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedEditProfileRoute: typeof AuthenticatedEditProfileRoute
   AuthenticatedUploadProjectRoute: typeof AuthenticatedUploadProjectRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAskQuestionRoute: AuthenticatedAskQuestionRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedEditProfileRoute: AuthenticatedEditProfileRoute,
   AuthenticatedUploadProjectRoute: AuthenticatedUploadProjectRoute,
 }
 
@@ -277,3 +299,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

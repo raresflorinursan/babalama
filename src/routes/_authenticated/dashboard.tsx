@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Plus, Upload, MessageCircleQuestion, Heart } from "lucide-react";
+import { Plus, Upload, MessageCircleQuestion, Heart, UserRound } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { ProjectCard } from "@/components/projects/ProjectCard";
@@ -60,6 +60,7 @@ function Dashboard() {
           <div className="flex flex-wrap gap-2">
             <Button asChild className="bg-gradient-primary hover:opacity-90"><Link to="/upload-project"><Upload className="mr-2 h-4 w-4" />Neues Projekt</Link></Button>
             <Button asChild variant="outline"><Link to="/ask-question"><Plus className="mr-2 h-4 w-4" />Neue Frage</Link></Button>
+            <Button asChild variant="outline"><Link to="/edit-profile"><UserRound className="mr-2 h-4 w-4" />Profil bearbeiten</Link></Button>
             <Button asChild variant="ghost"><Link to="/profile/$id" params={{ id: user?.id ?? "" }}>Profil ansehen</Link></Button>
           </div>
         </div>
