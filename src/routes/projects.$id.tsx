@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
+import { safeUrl } from "@/lib/safe-url";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import { formatDistanceToNow } from "date-fns";
@@ -110,8 +111,8 @@ function ProjectDetail() {
 
         <div className="mt-6 overflow-hidden rounded-2xl border border-border bg-card shadow-card-elegant">
           <div className="aspect-[21/9] bg-accent">
-            {project.image_url ? (
-              <img src={project.image_url} alt={project.title} className="h-full w-full object-cover" />
+            {safeUrl(project.image_url) ? (
+              <img src={safeUrl(project.image_url)} alt={project.title} className="h-full w-full object-cover" />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-muted-foreground">
                 <ImageIcon className="h-10 w-10" />
@@ -127,14 +128,14 @@ function ProjectDetail() {
             <p className="mt-2 text-muted-foreground">{project.short_description}</p>
 
             <div className="mt-5 flex flex-wrap items-center gap-2">
-              {project.github_url && (
+              {safeUrl(project.github_url) && (
                 <Button asChild variant="outline" size="sm">
-                  <a href={project.github_url} target="_blank" rel="noreferrer"><Github className="mr-2 h-4 w-4" />GitHub</a>
+                  <a href={safeUrl(project.github_url)} target="_blank" rel="noreferrer noopener"><Github className="mr-2 h-4 w-4" />GitHub</a>
                 </Button>
               )}
-              {project.demo_url && (
+              {safeUrl(project.demo_url) && (
                 <Button asChild size="sm" className="bg-gradient-primary hover:opacity-90">
-                  <a href={project.demo_url} target="_blank" rel="noreferrer"><ExternalLink className="mr-2 h-4 w-4" />Live-Demo</a>
+                  <a href={safeUrl(project.demo_url)} target="_blank" rel="noreferrer noopener"><ExternalLink className="mr-2 h-4 w-4" />Live-Demo</a>
                 </Button>
               )}
               <Button onClick={toggleLike} variant={liked ? "default" : "outline"} size="sm">

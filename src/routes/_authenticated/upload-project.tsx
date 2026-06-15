@@ -33,10 +33,18 @@ function UploadProject() {
 
   const update = (k: string, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const isValidHttpUrl = (v: string) => {
+    if (!v) return true;
+    try { const u = new URL(v); return u.protocol === "https:" || u.protocol === "http:"; } catch { return false; }
+  };
+
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!user) return;
     if (!form.title || !form.short_description) { toast.error("Titel und Kurzbeschreibung sind Pflicht"); return; }
+    for (const [k, v] of [["GitHub-Link", form.github_url], ["Live-Demo-Link", form.demo_url], ["Bild-URL", form.image_url]] as const) {
+      if (!isValidHttpUrl(v)) { toast.error(`${k} muss mit http:// oder https:// beginnen`); return; }
+    }
     setLoading(true);
     const slug = slugify(form.title) + "-" + Math.random().toString(36).slice(2, 6);
     const technologies = form.technologies.split(",").map((s) => s.trim()).filter(Boolean);
