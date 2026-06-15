@@ -69,7 +69,7 @@ function Dashboard() {
         <Block title="Meine Projekte" count={myProjects?.length ?? 0}>
           {myProjects && myProjects.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-              {myProjects.map((p) => <ProjectCard key={p.id} project={p} />)}
+              {myProjects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}
             </div>
           ) : (
             <Empty icon={<Upload className="h-6 w-6" />} title="Noch keine Projekte" cta="Projekt hochladen" to="/upload-project" />
@@ -78,7 +78,7 @@ function Dashboard() {
 
         <Block title="Gespeicherte Projekte" count={saved?.length ?? 0}>
           {saved && saved.length > 0 ? (
-            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{saved.map((p: any) => <ProjectCard key={p.id} project={p} />)}</div>
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{saved.map((p: any, i: number) => <ProjectCard key={p.id} project={p} index={i} />)}</div>
           ) : (
             <Empty icon={<Heart className="h-6 w-6" />} title="Noch nichts gespeichert" cta="Projekte entdecken" to="/projects" />
           )}

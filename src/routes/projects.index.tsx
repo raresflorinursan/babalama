@@ -41,7 +41,7 @@ function ProjectsPage() {
   });
 
   const projects = useMemo(() => {
-    const list = (data ?? []).map((p) => ({ ...p, author: p.profiles }));
+    const list = (data ?? []).map((p, i) => ({ ...p, author: p.profiles }));
     return list.filter((p) => {
       if (cat !== "Alle" && p.category !== cat) return false;
       if (diff !== "Alle" && p.difficulty !== diff) return false;
@@ -83,7 +83,7 @@ function ProjectsPage() {
         ) : projects.length === 0 ? (
           <EmptyState />
         ) : (
-          <Grid>{projects.map((p) => <ProjectCard key={p.id} project={p} />)}</Grid>
+          <Grid>{projects.map((p, i) => <ProjectCard key={p.id} project={p} index={i} />)}</Grid>
         )}
       </section>
     </SiteShell>

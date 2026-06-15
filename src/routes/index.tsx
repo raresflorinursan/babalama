@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, Sparkles, Rocket, MessageCircleQuestion, BookOpen, Upload, Code2, Brain, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteShell } from "@/components/layout/SiteShell";
+import { TiltCard } from "@/components/ui/tilt-card";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -69,16 +70,19 @@ function Home() {
               icon={<Code2 className="h-5 w-5" />}
               title="Echte Projekte"
               desc="Statt Theorie: durchsuche reale Coding- und KI-Projekte mit Code, Demo und Erklärung."
+              delay={0}
             />
             <FeatureCard
               icon={<Brain className="h-5 w-5" />}
               title="KI verständlich"
               desc="Lerne, wie moderne KI-Tools praktisch eingesetzt werden — ohne Buzzword-Bingo."
+              delay={90}
             />
             <FeatureCard
               icon={<Zap className="h-5 w-5" />}
               title="Schneller Einstieg"
               desc="Für Anfänger erklärt, für Fortgeschrittene tief genug. Du wählst, wie tief es geht."
+              delay={180}
             />
           </div>
         </div>
@@ -98,10 +102,10 @@ function Home() {
               </p>
             </div>
             <div className="grid gap-4">
-              <Step icon={<Rocket className="h-5 w-5" />} title="Projekte entdecken" desc="Filtere nach KI, Webentwicklung, SaaS, Automatisierung und mehr." to="/projects" />
-              <Step icon={<Upload className="h-5 w-5" />} title="Projekt hochladen" desc="Teile, was du gebaut hast — inkl. Tech-Stack, Lernpunkte und Demo." to="/upload-project" />
-              <Step icon={<MessageCircleQuestion className="h-5 w-5" />} title="Frage stellen" desc="Stuck? Stelle Coding- oder KI-Fragen, andere helfen weiter." to="/questions" />
-              <Step icon={<BookOpen className="h-5 w-5" />} title="Lernen" desc="Einfache Einführung in Coding, KI, APIs, Python, JavaScript & Co." to="/learn" />
+              <Step icon={<Rocket className="h-5 w-5" />} title="Projekte entdecken" desc="Filtere nach KI, Webentwicklung, SaaS, Automatisierung und mehr." to="/projects" delay={0} />
+              <Step icon={<Upload className="h-5 w-5" />} title="Projekt hochladen" desc="Teile, was du gebaut hast — inkl. Tech-Stack, Lernpunkte und Demo." to="/upload-project" delay={80} />
+              <Step icon={<MessageCircleQuestion className="h-5 w-5" />} title="Frage stellen" desc="Stuck? Stelle Coding- oder KI-Fragen, andere helfen weiter." to="/questions" delay={160} />
+              <Step icon={<BookOpen className="h-5 w-5" />} title="Lernen" desc="Einfache Einführung in Coding, KI, APIs, Python, JavaScript & Co." to="/learn" delay={240} />
             </div>
           </div>
         </div>
@@ -133,34 +137,38 @@ function Home() {
   );
 }
 
-function FeatureCard({ icon, title, desc }: { icon: React.ReactNode; title: string; desc: string }) {
+function FeatureCard({ icon, title, desc, delay = 0 }: { icon: React.ReactNode; title: string; desc: string; delay?: number }) {
   return (
-    <div className="group rounded-xl border border-border bg-card p-6 shadow-card-elegant transition-all hover:-translate-y-0.5 hover:border-primary/40">
-      <div className="grid h-10 w-10 place-items-center rounded-lg bg-accent text-primary-glow">
-        {icon}
+    <TiltCard delay={delay} className="rounded-xl">
+      <div className="group h-full rounded-xl border border-border bg-card p-6 shadow-card-elegant transition-colors hover:border-primary/40">
+        <div className="grid h-10 w-10 place-items-center rounded-lg bg-accent text-primary-glow">
+          {icon}
+        </div>
+        <h3 className="mt-4 font-medium">{title}</h3>
+        <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
       </div>
-      <h3 className="mt-4 font-medium">{title}</h3>
-      <p className="mt-2 text-sm text-muted-foreground">{desc}</p>
-    </div>
+    </TiltCard>
   );
 }
 
-function Step({ icon, title, desc, to }: { icon: React.ReactNode; title: string; desc: string; to: string }) {
+function Step({ icon, title, desc, to, delay = 0 }: { icon: React.ReactNode; title: string; desc: string; to: string; delay?: number }) {
   return (
-    <Link
-      to={to}
-      className="group flex items-start gap-4 rounded-xl border border-border bg-card p-5 transition-all hover:border-primary/40 hover:shadow-glow"
-    >
-      <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent text-primary-glow">
-        {icon}
-      </div>
-      <div className="flex-1">
-        <div className="flex items-center justify-between">
-          <h3 className="font-medium">{title}</h3>
-          <ArrowRight className="h-4 w-4 -translate-x-1 text-muted-foreground transition-all group-hover:translate-x-0 group-hover:text-foreground" />
+    <TiltCard delay={delay} max={5} className="rounded-xl">
+      <Link
+        to={to}
+        className="group flex items-start gap-4 rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40 hover:shadow-glow"
+      >
+        <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-accent text-primary-glow">
+          {icon}
         </div>
-        <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
-      </div>
-    </Link>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <h3 className="font-medium">{title}</h3>
+            <ArrowRight className="h-4 w-4 -translate-x-1 text-muted-foreground transition-all group-hover:translate-x-0 group-hover:text-foreground" />
+          </div>
+          <p className="mt-1 text-sm text-muted-foreground">{desc}</p>
+        </div>
+      </Link>
+    </TiltCard>
   );
 }
