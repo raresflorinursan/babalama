@@ -74,7 +74,7 @@ function GoogleButton() {
   const [loading, setLoading] = useState(false);
   const handle = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/dashboard" });
+    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth/callback" });
     if (result.error) {
       toast.error("Google-Login fehlgeschlagen");
       setLoading(false);

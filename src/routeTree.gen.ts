@@ -20,6 +20,7 @@ import { Route as QuestionsIndexRouteImport } from './routes/questions.index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsIdRouteImport } from './routes/projects.$id'
 import { Route as ProfileIdRouteImport } from './routes/profile.$id'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as AuthenticatedUploadProjectRouteImport } from './routes/_authenticated/upload-project'
 import { Route as AuthenticatedEditProfileRouteImport } from './routes/_authenticated/edit-profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
@@ -79,6 +80,11 @@ const ProfileIdRoute = ProfileIdRouteImport.update({
   path: '/profile/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/callback',
+  path: '/callback',
+  getParentRoute: () => AuthRoute,
+} as any)
 const AuthenticatedUploadProjectRoute =
   AuthenticatedUploadProjectRouteImport.update({
     id: '/upload-project',
@@ -105,7 +111,7 @@ const AuthenticatedAskQuestionRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/chats': typeof ChatsRoute
   '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/edit-profile': typeof AuthenticatedEditProfileRoute
   '/upload-project': typeof AuthenticatedUploadProjectRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/profile/$id': typeof ProfileIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -121,7 +128,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/chats': typeof ChatsRoute
   '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
@@ -130,6 +137,7 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/edit-profile': typeof AuthenticatedEditProfileRoute
   '/upload-project': typeof AuthenticatedUploadProjectRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/profile/$id': typeof ProfileIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects': typeof ProjectsIndexRoute
@@ -139,7 +147,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
+  '/auth': typeof AuthRouteWithChildren
   '/chats': typeof ChatsRoute
   '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/edit-profile': typeof AuthenticatedEditProfileRoute
   '/_authenticated/upload-project': typeof AuthenticatedUploadProjectRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/profile/$id': typeof ProfileIdRoute
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
@@ -166,6 +175,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/edit-profile'
     | '/upload-project'
+    | '/auth/callback'
     | '/profile/$id'
     | '/projects/$id'
     | '/projects/'
@@ -182,6 +192,7 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/edit-profile'
     | '/upload-project'
+    | '/auth/callback'
     | '/profile/$id'
     | '/projects/$id'
     | '/projects'
@@ -199,6 +210,7 @@ export interface FileRouteTypes {
     | '/_authenticated/dashboard'
     | '/_authenticated/edit-profile'
     | '/_authenticated/upload-project'
+    | '/auth/callback'
     | '/profile/$id'
     | '/projects/$id'
     | '/projects/'
@@ -208,7 +220,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  AuthRoute: typeof AuthRouteWithChildren
   ChatsRoute: typeof ChatsRoute
   CommunityRoute: typeof CommunityRoute
   LearnRoute: typeof LearnRoute
@@ -298,6 +310,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProfileIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof AuthRoute
+    }
     '/_authenticated/upload-project': {
       id: '/_authenticated/upload-project'
       path: '/upload-project'
@@ -346,10 +365,20 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface AuthRouteChildren {
+  AuthCallbackRoute: typeof AuthCallbackRoute
+}
+
+const AuthRouteChildren: AuthRouteChildren = {
+  AuthCallbackRoute: AuthCallbackRoute,
+}
+
+const AuthRouteWithChildren = AuthRoute._addFileChildren(AuthRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  AuthRoute: AuthRouteWithChildren,
   ChatsRoute: ChatsRoute,
   CommunityRoute: CommunityRoute,
   LearnRoute: LearnRoute,
