@@ -4,11 +4,13 @@ export function GalacticBackground() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
+    const canvas = canvasRef.current as HTMLCanvasElement | null;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D | null;
     if (!ctx) return;
+    const c: HTMLCanvasElement = canvas;
+    const g: CanvasRenderingContext2D = ctx;
 
     let width = 0;
     let height = 0;
