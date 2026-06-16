@@ -11,7 +11,7 @@ export function Footer() {
             Solvix
           </div>
           <p className="mt-3 max-w-md text-sm text-muted-foreground">
-            Entdecke, teile und baue Coding- und KI-Projekte. Eine Community für Menschen,
+            Entdecke, teile und baue Coding- und KI-Projekte. Eine Plattform für Menschen,
             die lernen, bauen und sich inspirieren lassen wollen.
           </p>
         </div>
