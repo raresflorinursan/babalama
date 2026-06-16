@@ -9,6 +9,8 @@ export function GalacticBackground() {
 
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
+    const c = canvas;
+    const g = ctx;
 
     let width = 0;
     let height = 0;
