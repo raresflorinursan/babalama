@@ -12,10 +12,10 @@ import {
   Heart,
   MessageCircle,
   MoreHorizontal,
+  Newspaper,
   Rocket,
   Search,
   Send,
-  ShieldCheck,
   Share2,
   Sparkles,
   UserCheck,
@@ -53,6 +53,29 @@ type Post = {
 };
 
 const categories = ["Allgemein", "Gefolgt", "Coding", "KI", "SaaS", "Projekte", "Fragen"];
+
+const aiNewsSources = [
+  {
+    source: "OpenAI News",
+    topic: "ChatGPT, Codex und neue KI-Produkte",
+    url: "https://openai.com/news/",
+  },
+  {
+    source: "GitHub Blog",
+    topic: "Copilot, Coding-Workflows und Developer Tools",
+    url: "https://github.blog/",
+  },
+  {
+    source: "Microsoft AI Blog",
+    topic: "Copilot, Cloud und Enterprise-KI",
+    url: "https://blogs.microsoft.com/ai/",
+  },
+  {
+    source: "Google DeepMind",
+    topic: "KI-Forschung, Modelle und Produktupdates",
+    url: "https://deepmind.google/discover/blog/",
+  },
+];
 
 const peopleSeed: Person[] = [
   {
@@ -201,8 +224,8 @@ function CommunityPage() {
   const [shareDialogPostId, setShareDialogPostId] = useState<number | null>(null);
   const [sharedPostIds, setSharedPostIds] = useState<number[]>([]);
 
-  const remaining = 240 - postText.length;
-  const canPost = postText.trim().length > 0 && postText.length <= 240;
+  const remaining = 200 - postText.length;
+  const canPost = postText.trim().length > 0 && postText.length <= 200;
   const detectedCategory = useMemo(() => detectCategory(postText), [postText]);
 
   const peopleByHandle = useMemo(() => new Map(people.map((person) => [person.handle, person])), [people]);
@@ -325,12 +348,12 @@ function CommunityPage() {
           />
         </label>
 
-        <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+        <div className="mt-4 grid gap-2 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7">
           {categories.map((category) => (
             <button
               key={category}
               onClick={() => setActiveCategory(category)}
-              className={`inline-flex items-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
+              className={`inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
                 activeCategory === category
                   ? "bg-primary text-primary-foreground shadow-glow"
                   : "border border-border bg-card/70 text-muted-foreground hover:bg-accent hover:text-foreground"
@@ -352,7 +375,7 @@ function CommunityPage() {
                 <div className="min-w-0 flex-1">
                   <textarea
                     value={postText}
-                    onChange={(event) => setPostText(event.target.value.slice(0, 260))}
+                    onChange={(event) => setPostText(event.target.value.slice(0, 200))}
                     placeholder="Was möchtest du teilen? Nutze z.B. #Coding oder #SaaS"
                     className="min-h-24 w-full resize-none border-0 bg-transparent text-sm leading-relaxed text-foreground outline-none placeholder:text-muted-foreground"
                   />
@@ -366,10 +389,6 @@ function CommunityPage() {
                         Erkannt: {detectedCategory}
                       </span>
                       <span className={remaining < 0 ? "text-destructive" : ""}>{remaining} Zeichen</span>
-                      <span className="inline-flex items-center gap-1.5 text-primary-glow">
-                        <ShieldCheck className="h-3.5 w-3.5" />
-                        Nur echte Menschen
-                      </span>
                     </div>
                     <Button onClick={publishPost} disabled={!canPost} className="bg-gradient-primary shadow-glow hover:opacity-90">
                       Posten
@@ -445,6 +464,35 @@ function CommunityPage() {
                   </button>
                 ))}
               </div>
+            </Panel>
+
+            <Panel>
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <Newspaper className="h-4 w-4 text-primary-glow" />
+                  News
+                </div>
+                <span className="rounded-full border border-border bg-background/50 px-2 py-0.5 text-[11px] text-muted-foreground">
+                  KI & Coding
+                </span>
+              </div>
+              <div className="mt-4 space-y-3">
+                {aiNewsSources.map((item) => (
+                  <a
+                    key={item.source}
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="block rounded-xl border border-border bg-background/45 p-3 transition-colors hover:border-primary/40 hover:bg-accent/60"
+                  >
+                    <div className="text-sm font-medium">{item.source}</div>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{item.topic}</p>
+                  </a>
+                ))}
+              </div>
+              <p className="mt-4 text-xs leading-relaxed text-muted-foreground">
+                Vertrauenswürdige Quellen. Automatische Aktualisierung per Feed/API ist vorbereitet als nächster Schritt.
+              </p>
             </Panel>
           </aside>
         </div>
@@ -596,7 +644,7 @@ type SharePlatform = {
 
 function ShareDialog({ post, author, onClose, onShare }: { post: Post; author: Person; onClose: () => void; onShare: () => void }) {
   const shareUrl = buildPublicShareUrl(`/community?tweet=${post.id}`);
-  const shareTitle = `Tweet von ${author.name} auf Solvix`;
+  const shareTitle = `Beitrag von ${author.name} auf Solvix`;
   const shareText = `${post.body}\n\n${shareUrl}`;
   const encodedUrl = encodeURIComponent(shareUrl);
   const encodedText = encodeURIComponent(shareText);
@@ -690,8 +738,8 @@ function ShareDialog({ post, author, onClose, onShare }: { post: Post; author: P
       <div className="w-full max-w-lg rounded-2xl border border-border bg-card p-5 shadow-glow animate-in fade-in zoom-in-95 duration-200">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <p className="text-xs uppercase text-primary-glow">Tweet teilen</p>
-            <h2 className="mt-1 text-lg font-medium">Wohin möchtest du ihn schicken?</h2>
+            <h2 className="text-2xl font-semibold tracking-tight">Teilen</h2>
+            <p className="mt-1 text-sm text-muted-foreground">Wähle eine Plattform zum Weiterleiten.</p>
           </div>
           <button onClick={onClose} className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Teilen schließen">
             <X className="h-4 w-4" />

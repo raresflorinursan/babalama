@@ -10,6 +10,7 @@ import {
   Rocket,
   Sparkles,
   Workflow,
+  X,
 } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { TiltCard } from "@/components/ui/tilt-card";
@@ -21,6 +22,8 @@ type LearnTopic = {
   detail: string;
   howItWorks: string;
   whyItMatters: string;
+  example: string;
+  nextStep: string;
   icon: React.ReactNode;
 };
 
@@ -29,54 +32,66 @@ const learnTopics: LearnTopic[] = [
     id: "coding",
     title: "Was ist Coding?",
     summary: "Programmieren heißt, dem Computer in einer Sprache zu sagen, was er tun soll — wie ein Rezept, nur sehr präzise.",
-    detail: "Du schreibst Anweisungen Schritt für Schritt. Der Computer versteht keine Absicht, sondern nur klare Regeln.",
-    howItWorks: "Du nutzt Sprachen wie JavaScript oder Python, definierst Logik, speicherst Daten und reagierst auf Eingaben.",
-    whyItMatters: "Damit baust du Webseiten, Tools, Automationen und Produkte, statt nur vorhandene Software zu nutzen.",
+    detail: "Coding bedeutet, ein Problem in kleine, klare Schritte zu zerlegen und diese Schritte so aufzuschreiben, dass ein Computer sie ausführen kann. Es geht nicht nur um Syntax. Es geht darum, logisch zu denken, Fehler zu finden und aus einer Idee ein funktionierendes System zu machen.",
+    howItWorks: "Du nutzt Sprachen wie JavaScript oder Python, definierst Logik, speicherst Daten und reagierst auf Eingaben. Aus vielen kleinen Entscheidungen entsteht am Ende eine Website, eine App, ein Tool oder eine Automation.",
+    whyItMatters: "Damit baust du Webseiten, Tools, Automationen und Produkte, statt nur vorhandene Software zu nutzen. Wer Coding versteht, kann eigene Lösungen bauen und digitale Ideen schneller testen.",
+    example: "Ein einfaches Beispiel ist eine To-Do-App: Eingabe lesen, Aufgabe speichern, Liste anzeigen, Aufgabe abhaken. Klingt klein, enthält aber schon echte Produktlogik.",
+    nextStep: "Starte mit einem Mini-Projekt, das du wirklich benutzen würdest. Nicht zehn Tutorials schauen, sondern ein kleines Problem sauber lösen.",
     icon: <Code2 className="h-5 w-5" />,
   },
   {
     id: "ai",
     title: "Was ist KI?",
     summary: "Künstliche Intelligenz sind Systeme, die aus Daten lernen — z.B. um Texte zu schreiben, Bilder zu erzeugen oder Muster zu erkennen.",
-    detail: "KI ist kein Magietrick. Sie basiert auf Modellen, Trainingsdaten und klaren Aufgaben.",
-    howItWorks: "Ein Modell verarbeitet Eingaben, erkennt Strukturen und gibt auf Basis gelernter Muster eine Antwort zurück.",
-    whyItMatters: "Du kannst damit Recherche, Support, Content, Analyse und ganze Workflows deutlich schneller machen.",
+    detail: "KI ist kein Magietrick. Sie besteht aus Modellen, die Muster in Daten gelernt haben und auf neue Eingaben reagieren können. Entscheidend ist, dass du der KI eine klare Aufgabe, guten Kontext und ein prüfbares Ziel gibst.",
+    howItWorks: "Ein Modell verarbeitet Eingaben, erkennt Strukturen und gibt auf Basis gelernter Muster eine Antwort zurück. Je besser Kontext, Daten und Ziel formuliert sind, desto brauchbarer wird das Ergebnis.",
+    whyItMatters: "Du kannst damit Recherche, Support, Content, Analyse und ganze Workflows deutlich schneller machen. In Kombination mit Coding wird KI nicht nur ein Chat, sondern ein Teil deines Produkts.",
+    example: "Ein KI-Assistent kann Nutzerfragen zusammenfassen, passende Projektideen vorschlagen oder aus Formular-Daten automatisch eine strukturierte Aufgabe erzeugen.",
+    nextStep: "Lerne nicht nur Prompts. Lerne, wie KI mit Daten, UI, Datenbanken und klaren Regeln in echte Systeme eingebaut wird.",
     icon: <Brain className="h-5 w-5" />,
   },
   {
     id: "importance",
     title: "Warum ist das wichtig?",
     summary: "Coding und KI sind heute überall: Apps, Webseiten, Automatisierungen, Geschäftsideen. Wer es versteht, kann Dinge bauen, nicht nur konsumieren.",
-    detail: "Digitale Produkte entscheiden heute oft über Reichweite, Geschwindigkeit und Umsatz.",
-    howItWorks: "Wenn du Software und KI kombinierst, kannst du Probleme lösen, Prozesse beschleunigen und neue Systeme bauen.",
-    whyItMatters: "Das ist der Unterschied zwischen Nutzer und Builder. Genau dort entstehen Chancen für Projekte, Jobs und SaaS.",
+    detail: "Digitale Produkte entscheiden heute oft über Reichweite, Geschwindigkeit und Umsatz. Unternehmen, Creator und Teams suchen ständig nach Wegen, schneller zu arbeiten, bessere Entscheidungen zu treffen und wiederkehrende Aufgaben zu reduzieren.",
+    howItWorks: "Wenn du Software und KI kombinierst, kannst du Probleme lösen, Prozesse beschleunigen und neue Systeme bauen. Coding macht die Struktur, KI bringt Unterstützung bei Text, Analyse, Suche und Automatisierung.",
+    whyItMatters: "Das ist der Unterschied zwischen Nutzer und Builder. Genau dort entstehen Chancen für Projekte, Jobs und SaaS, weil du nicht nur Tools konsumierst, sondern eigene Werkzeuge erschaffst.",
+    example: "Ein Student kann eine Lernplattform bauen, ein Freelancer ein Kunden-Dashboard und ein Gründer ein SaaS für ein konkretes Firmenproblem.",
+    nextStep: "Suche echte Probleme in deinem Alltag. Wenn sich etwas wiederholt, langsam ist oder nervt, ist es oft eine gute Projektidee.",
     icon: <Rocket className="h-5 w-5" />,
   },
   {
     id: "languages",
     title: "Welche Sprache zuerst?",
     summary: "Python für KI/Daten/Automation, JavaScript für Web. Beide sind anfängerfreundlich und überall einsetzbar.",
-    detail: "Du musst nicht alles gleichzeitig lernen. Starte mit einer Sprache und baue echte Mini-Projekte.",
-    howItWorks: "Python ist sehr lesbar und stark bei Daten und KI. JavaScript läuft direkt im Browser und ist Pflicht fürs Web.",
-    whyItMatters: "Mit der richtigen ersten Sprache kommst du schneller ins Bauen und bleibst eher dran.",
+    detail: "Du musst nicht alles gleichzeitig lernen. Die beste erste Sprache ist die, mit der du schnell echte Ergebnisse bauen kannst. Python und JavaScript sind dafür stark, weil sie große Communities, viele Beispiele und viele Einsatzbereiche haben.",
+    howItWorks: "Python ist sehr lesbar und stark bei Daten, Automationen und KI. JavaScript läuft direkt im Browser und ist Pflicht fürs Web. Später kannst du beide kombinieren.",
+    whyItMatters: "Mit der richtigen ersten Sprache kommst du schneller ins Bauen und bleibst eher dran. Zu viele Sprachen am Anfang führen oft zu Chaos statt Fortschritt.",
+    example: "Wenn du Webseiten und Plattformen bauen willst, starte mit JavaScript/TypeScript. Wenn du KI, Daten oder Automationen bauen willst, ist Python ein sehr guter Start.",
+    nextStep: "Wähle eine Sprache für 30 Tage. Baue jeden Tag ein kleines Feature, statt ständig die Richtung zu wechseln.",
     icon: <Cpu className="h-5 w-5" />,
   },
   {
     id: "apis",
     title: "APIs & Datenbanken",
     summary: "APIs verbinden Apps miteinander, Datenbanken speichern Informationen. Zusammen sind sie das Rückgrat fast jeder Software.",
-    detail: "Ohne Daten und Verbindungen bleiben die meisten Apps statisch und isoliert.",
-    howItWorks: "APIs schicken strukturierte Daten zwischen Systemen hin und her. Datenbanken speichern Nutzer, Inhalte und Zustände.",
-    whyItMatters: "Sobald du Logins, Profile, Dashboards oder Automationen baust, brauchst du diese beiden Bausteine fast immer.",
+    detail: "Ohne Daten und Verbindungen bleiben die meisten Apps statisch und isoliert. APIs und Datenbanken machen aus einer Oberfläche ein echtes Produkt, weil Informationen gespeichert, geladen und zwischen Systemen ausgetauscht werden.",
+    howItWorks: "APIs schicken strukturierte Daten zwischen Systemen hin und her. Datenbanken speichern Nutzer, Inhalte und Zustände. Supabase, PostgreSQL oder ähnliche Tools übernehmen dabei viel Infrastruktur.",
+    whyItMatters: "Sobald du Logins, Profile, Dashboards, Kommentare, Uploads oder Automationen baust, brauchst du diese beiden Bausteine fast immer.",
+    example: "Bei Solvix speichern Profile, Projekte, Fragen und später Tweets ihre Daten in Tabellen. Die App fragt diese Daten ab und zeigt sie passend im Interface an.",
+    nextStep: "Lerne CRUD: Create, Read, Update, Delete. Wenn du das verstehst, kannst du sehr viele Produktideen technisch umsetzen.",
     icon: <Database className="h-5 w-5" />,
   },
   {
     id: "automation",
     title: "Automatisierung & SaaS",
     summary: "Automatisiere Aufgaben oder baue ein SaaS — eine Software, die andere abonnieren.",
-    detail: "Viele Probleme im Business sind wiederholbar. Genau das ist der beste Ausgangspunkt für Automation und Software.",
-    howItWorks: "Du kombinierst Regeln, APIs, Trigger und Interfaces, damit Prozesse automatisch ablaufen oder als Produkt nutzbar werden.",
-    whyItMatters: "Hier entsteht oft der direkte Hebel für Zeitgewinn, Geld und wiederkehrenden Nutzen.",
+    detail: "Viele Probleme im Business sind wiederholbar. Genau das ist der beste Ausgangspunkt für Automation und Software. Ein SaaS löst ein konkretes Problem nicht einmal, sondern dauerhaft für viele Nutzer.",
+    howItWorks: "Du kombinierst Regeln, APIs, Trigger und Interfaces, damit Prozesse automatisch ablaufen oder als Produkt nutzbar werden. Gute SaaS-Produkte sind oft nicht riesig, sondern klar fokussiert.",
+    whyItMatters: "Hier entsteht oft der direkte Hebel für Zeitgewinn, Geld und wiederkehrenden Nutzen. Wenn ein Tool jeden Monat Wert liefert, kann daraus ein Abo-Modell entstehen.",
+    example: "Ein Tool, das Firmen automatisch Leads sortiert, Bewerbungen vorstrukturiert oder Social Posts plant, kann als kleines SaaS starten.",
+    nextStep: "Suche ein wiederkehrendes Problem, baue ein sehr kleines MVP und teste es mit echten Nutzern, bevor du zu viele Features baust.",
     icon: <Workflow className="h-5 w-5" />,
   },
 ];
@@ -117,10 +132,10 @@ export const Route = createFileRoute("/learn")({
 });
 
 function LearnPage() {
-  const [selectedTopicId, setSelectedTopicId] = useState(learnTopics[0].id);
+  const [selectedTopicId, setSelectedTopicId] = useState<string | null>(null);
   const [activeLevel, setActiveLevel] = useState<keyof typeof botLevels>("Einfach");
   const [botPrompt, setBotPrompt] = useState("");
-  const selectedTopic = learnTopics.find((topic) => topic.id === selectedTopicId) ?? learnTopics[0];
+  const selectedTopic = learnTopics.find((topic) => topic.id === selectedTopicId) ?? null;
   const generatedTask =
     botPrompt.trim().length > 0
       ? `Baue ein ${activeLevel.toLowerCase()}es Mini-Projekt zu "${botPrompt.trim()}": definiere zuerst das Ziel, erstelle eine einfache Oberfläche, speichere mindestens einen Zustand und dokumentiere, was du gelernt hast.`
@@ -145,8 +160,7 @@ function LearnPage() {
       </section>
 
       <section className="mx-auto max-w-5xl px-4 py-16 sm:px-6">
-        <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_320px] md:items-start lg:grid-cols-[minmax(0,1fr)_360px]">
-          <div className="grid gap-5 sm:grid-cols-2 md:grid-cols-1">
+        <div className="grid gap-5 sm:grid-cols-2">
           {learnTopics.map((topic) => {
             const isSelected = selectedTopicId === topic.id;
             return (
@@ -167,30 +181,6 @@ function LearnPage() {
               </TiltCard>
             );
           })}
-          </div>
-
-          <TiltCard key={selectedTopic.id} max={4} scale={1.01} className="rounded-xl md:sticky md:top-24">
-            <aside className="rounded-xl border border-primary/35 bg-card/90 p-5 shadow-glow backdrop-blur animate-in fade-in zoom-in-95 slide-in-from-right-4 duration-300">
-              <div className="flex items-start gap-3">
-                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-lg bg-accent text-primary-glow">
-                  {selectedTopic.icon}
-                </div>
-                <div>
-                  <p className="text-xs uppercase text-primary-glow">Lernfenster</p>
-                  <h2 className="mt-1 text-lg font-medium">{selectedTopic.title}</h2>
-                </div>
-              </div>
-              <p className="mt-4 text-sm leading-relaxed text-foreground">{selectedTopic.detail}</p>
-              <div className="mt-4 space-y-3 rounded-xl border border-border bg-background/40 p-4">
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-foreground">So funktioniert es:</span> {selectedTopic.howItWorks}
-                </p>
-                <p className="text-sm leading-relaxed text-muted-foreground">
-                  <span className="font-medium text-foreground">Warum es relevant ist:</span> {selectedTopic.whyItMatters}
-                </p>
-              </div>
-            </aside>
-          </TiltCard>
         </div>
 
         <div className="mt-10 rounded-xl border border-border bg-card p-4 shadow-card-elegant">
@@ -258,7 +248,60 @@ function LearnPage() {
           </div>
         </div>
       </section>
+      {selectedTopic && <LearnTopicModal topic={selectedTopic} onClose={() => setSelectedTopicId(null)} />}
     </SiteShell>
+  );
+}
+
+function LearnTopicModal({ topic, onClose }: { topic: LearnTopic; onClose: () => void }) {
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/80 px-4 py-8 backdrop-blur-md animate-in fade-in duration-200">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_12%,hsl(var(--primary)/.18),transparent_34%)]" />
+      <TiltCard max={4} scale={1.01} className="relative z-10 w-full max-w-3xl rounded-2xl">
+        <article className="max-h-[86vh] overflow-y-auto rounded-2xl border border-primary/35 bg-card/95 p-6 shadow-[0_30px_140px_rgba(0,0,0,0.7)] backdrop-blur-xl sm:p-8">
+          <div className="flex items-start justify-between gap-5">
+            <div className="flex items-start gap-4">
+              <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-accent text-primary-glow shadow-glow">
+                {topic.icon}
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-wide text-primary-glow">Lernfenster</p>
+                <h2 className="mt-1 text-2xl font-semibold tracking-tight sm:text-3xl">{topic.title}</h2>
+                <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">{topic.summary}</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-background/60 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground"
+              aria-label="Lernfenster schließen"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          <div className="mt-7 space-y-5">
+            <ModalTextBlock title="Kurz erklärt" text={topic.detail} />
+            <div className="grid gap-4 md:grid-cols-2">
+              <ModalTextBlock title="So funktioniert es" text={topic.howItWorks} />
+              <ModalTextBlock title="Warum es wichtig ist" text={topic.whyItMatters} />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <ModalTextBlock title="Beispiel" text={topic.example} />
+              <ModalTextBlock title="Nächster Schritt" text={topic.nextStep} />
+            </div>
+          </div>
+        </article>
+      </TiltCard>
+    </div>
+  );
+}
+
+function ModalTextBlock({ title, text }: { title: string; text: string }) {
+  return (
+    <div className="rounded-xl border border-border bg-background/45 p-4">
+      <h3 className="text-sm font-medium text-foreground">{title}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{text}</p>
+    </div>
   );
 }
 
