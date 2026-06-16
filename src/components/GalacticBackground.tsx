@@ -7,7 +7,7 @@ export function GalacticBackground() {
     const canvas = canvasRef.current as HTMLCanvasElement | null;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d") as CanvasRenderingContext2D | null;
+    const ctx = canvas!.getContext("2d") as CanvasRenderingContext2D | null;
     if (!ctx) return;
     const c: HTMLCanvasElement = canvas;
     const g: CanvasRenderingContext2D = ctx;
@@ -24,11 +24,11 @@ export function GalacticBackground() {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
-      canvas.width = Math.floor(width * dpr);
-      canvas.height = Math.floor(height * dpr);
-      canvas.style.width = `${width}px`;
-      canvas.style.height = `${height}px`;
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      canvas!.width = Math.floor(width * dpr);
+      canvas!.height = Math.floor(height * dpr);
+      canvas!.style.width = `${width}px`;
+      canvas!.style.height = `${height}px`;
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     class Star {
@@ -45,24 +45,24 @@ export function GalacticBackground() {
         const twinkle = 0.5 + 0.5 * Math.sin(t * this.twinkleSpeed * 60 + this.twinkleOffset);
         const yd = ((this.y - scrollY * this.parallax * 0.15) % height + height) % height;
 
-        ctx.save();
-        ctx.globalAlpha = this.opacity * (0.5 + 0.5 * twinkle);
+        ctx!.save();
+        ctx!.globalAlpha = this.opacity * (0.5 + 0.5 * twinkle);
 
         if (this.size > 1.2) {
-          const gradient = ctx.createRadialGradient(this.x, yd, 0, this.x, yd, this.size * 3);
+          const gradient = ctx!.createRadialGradient(this.x, yd, 0, this.x, yd, this.size * 3);
           gradient.addColorStop(0, this.color);
           gradient.addColorStop(1, "transparent");
-          ctx.fillStyle = gradient;
-          ctx.beginPath();
-          ctx.arc(this.x, yd, this.size * 3, 0, Math.PI * 2);
-          ctx.fill();
+          ctx!.fillStyle = gradient;
+          ctx!.beginPath();
+          ctx!.arc(this.x, yd, this.size * 3, 0, Math.PI * 2);
+          ctx!.fill();
         }
 
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, yd, this.size, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+        ctx!.fillStyle = this.color;
+        ctx!.beginPath();
+        ctx!.arc(this.x, yd, this.size, 0, Math.PI * 2);
+        ctx!.fill();
+        ctx!.restore();
       }
     }
 
@@ -89,21 +89,21 @@ export function GalacticBackground() {
 
         const yd = this.y - scrollY * this.parallax * 0.1;
 
-        ctx.save();
-        ctx.translate(this.x, yd);
-        ctx.rotate(this.rotation + t * 0.0003);
+        ctx!.save();
+        ctx!.translate(this.x, yd);
+        ctx!.rotate(this.rotation + t * 0.0003);
 
-        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, this.rx);
+        const gradient = ctx!.createRadialGradient(0, 0, 0, 0, 0, this.rx);
         gradient.addColorStop(0, `${this.color},${this.opacity})`);
         gradient.addColorStop(0.5, `${this.color},${this.opacity * 0.4})`);
         gradient.addColorStop(1, `${this.color},0)`);
 
-        ctx.scale(1, this.ry / this.rx);
-        ctx.fillStyle = gradient;
-        ctx.beginPath();
-        ctx.arc(0, 0, this.rx, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+        ctx!.scale(1, this.ry / this.rx);
+        ctx!.fillStyle = gradient;
+        ctx!.beginPath();
+        ctx!.arc(0, 0, this.rx, 0, Math.PI * 2);
+        ctx!.fill();
+        ctx!.restore();
       }
     }
 
@@ -131,15 +131,15 @@ export function GalacticBackground() {
         const pulse = 0.6 + 0.4 * Math.sin(t * 0.02 + this.pulseOffset);
         const yd = ((this.y - scrollY * this.parallax * 0.1) % height + height) % height;
 
-        ctx.save();
-        ctx.shadowBlur = 18 * pulse;
-        ctx.shadowColor = this.color;
-        ctx.globalAlpha = 0.75 * pulse;
-        ctx.fillStyle = this.color;
-        ctx.beginPath();
-        ctx.arc(this.x, yd, this.r * pulse, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
+        ctx!.save();
+        ctx!.shadowBlur = 18 * pulse;
+        ctx!.shadowColor = this.color;
+        ctx!.globalAlpha = 0.75 * pulse;
+        ctx!.fillStyle = this.color;
+        ctx!.beginPath();
+        ctx!.arc(this.x, yd, this.r * pulse, 0, Math.PI * 2);
+        ctx!.fill();
+        ctx!.restore();
       }
     }
 
@@ -187,21 +187,21 @@ export function GalacticBackground() {
 
         const tx = this.x - Math.cos(this.angle) * this.len;
         const ty = this.y - Math.sin(this.angle) * this.len;
-        const gradient = ctx.createLinearGradient(tx, ty, this.x, this.y);
+        const gradient = ctx!.createLinearGradient(tx, ty, this.x, this.y);
 
         gradient.addColorStop(0, "rgba(255,255,255,0)");
         gradient.addColorStop(0.7, `rgba(186,230,253,${this.opacity * 0.6})`);
         gradient.addColorStop(1, `rgba(255,255,255,${this.opacity})`);
 
-        ctx.save();
-        ctx.globalAlpha = this.opacity;
-        ctx.strokeStyle = gradient;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(tx, ty);
-        ctx.lineTo(this.x, this.y);
-        ctx.stroke();
-        ctx.restore();
+        ctx!.save();
+        ctx!.globalAlpha = this.opacity;
+        ctx!.strokeStyle = gradient;
+        ctx!.lineWidth = 1.5;
+        ctx!.beginPath();
+        ctx!.moveTo(tx, ty);
+        ctx!.lineTo(this.x, this.y);
+        ctx!.stroke();
+        ctx!.restore();
       }
     }
 
@@ -242,20 +242,20 @@ export function GalacticBackground() {
 
           if (dist < maxDist) {
             const alpha = 0.025 + (1 - dist / maxDist) * 0.145;
-            const gradient = ctx.createLinearGradient(nodeList[i].x, yi, nodeList[j].x, yj);
+            const gradient = ctx!.createLinearGradient(nodeList[i].x, yi, nodeList[j].x, yj);
 
             gradient.addColorStop(0, nodeList[i].color);
             gradient.addColorStop(1, nodeList[j].color);
 
-            ctx.save();
-            ctx.globalAlpha = alpha;
-            ctx.strokeStyle = gradient;
-            ctx.lineWidth = 0.75;
-            ctx.beginPath();
-            ctx.moveTo(nodeList[i].x, yi);
-            ctx.lineTo(nodeList[j].x, yj);
-            ctx.stroke();
-            ctx.restore();
+            ctx!.save();
+            ctx!.globalAlpha = alpha;
+            ctx!.strokeStyle = gradient;
+            ctx!.lineWidth = 0.75;
+            ctx!.beginPath();
+            ctx!.moveTo(nodeList[i].x, yi);
+            ctx!.lineTo(nodeList[j].x, yj);
+            ctx!.stroke();
+            ctx!.restore();
           }
         }
       }
@@ -265,20 +265,20 @@ export function GalacticBackground() {
       const totalHeight = document.body.scrollHeight - window.innerHeight;
       const progress = totalHeight > 0 ? Math.min(scrollY / totalHeight, 1) : 0;
       const centerY = height * (0.35 - progress * 0.25);
-      const glow = ctx.createRadialGradient(width * 0.5, centerY, 0, width * 0.5, centerY, width * 0.38);
+      const glow = ctx!.createRadialGradient(width * 0.5, centerY, 0, width * 0.5, centerY, width * 0.38);
 
       glow.addColorStop(0, `rgba(14,165,233,${0.07 + progress * 0.03})`);
       glow.addColorStop(0.4, "rgba(129,140,248,0.025)");
       glow.addColorStop(1, "transparent");
-      ctx.fillStyle = glow;
-      ctx.fillRect(0, 0, width, height);
+      ctx!.fillStyle = glow;
+      ctx!.fillRect(0, 0, width, height);
 
       const secondX = width * (0.25 + progress * 0.5);
-      const secondGlow = ctx.createRadialGradient(secondX, height * 0.65, 0, secondX, height * 0.65, width * 0.28);
+      const secondGlow = ctx!.createRadialGradient(secondX, height * 0.65, 0, secondX, height * 0.65, width * 0.28);
       secondGlow.addColorStop(0, `rgba(192,132,252,${0.05 + progress * 0.03})`);
       secondGlow.addColorStop(1, "transparent");
-      ctx.fillStyle = secondGlow;
-      ctx.fillRect(0, 0, width, height);
+      ctx!.fillStyle = secondGlow;
+      ctx!.fillRect(0, 0, width, height);
     }
 
     function drawGrid() {
@@ -287,31 +287,31 @@ export function GalacticBackground() {
       const gridSize = 70;
       const drift = (scrollY * 0.15) % gridSize;
 
-      ctx.save();
-      ctx.globalAlpha = 0.025 + progress * 0.05;
-      ctx.strokeStyle = "#38bdf8";
-      ctx.lineWidth = 0.4;
+      ctx!.save();
+      ctx!.globalAlpha = 0.025 + progress * 0.05;
+      ctx!.strokeStyle = "#38bdf8";
+      ctx!.lineWidth = 0.4;
 
       for (let x = 0; x < width + gridSize; x += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(x, 0);
-        ctx.lineTo(x, height);
-        ctx.stroke();
+        ctx!.beginPath();
+        ctx!.moveTo(x, 0);
+        ctx!.lineTo(x, height);
+        ctx!.stroke();
       }
 
       for (let y = -gridSize + drift; y < height + gridSize; y += gridSize) {
-        ctx.beginPath();
-        ctx.moveTo(0, y);
-        ctx.lineTo(width, y);
-        ctx.stroke();
+        ctx!.beginPath();
+        ctx!.moveTo(0, y);
+        ctx!.lineTo(width, y);
+        ctx!.stroke();
       }
 
-      ctx.restore();
+      ctx!.restore();
     }
 
     function animate() {
       time += 1;
-      ctx.clearRect(0, 0, width, height);
+      ctx!.clearRect(0, 0, width, height);
       drawGrid();
       nebulae.forEach((nebula) => nebula.draw(time));
       drawGlow();
