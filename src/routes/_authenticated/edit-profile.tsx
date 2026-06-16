@@ -23,6 +23,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
+import { isSolvixOwner, normalizeUsername, validateUsername } from "@/lib/platform-security";
 import { safeUrl } from "@/lib/safe-url";
 
 type Profile = Database["public"]["Tables"]["profiles"]["Row"];
@@ -149,11 +150,15 @@ function EditProfilePage() {
 
   const handleSave = async () => {
     if (!user) return;
-    const normalizedUsername = form.username.trim();
-    if (normalizedUsername && normalizedUsername.length < 3) {
-      toast.error("Der Username sollte mindestens 3 Zeichen haben.");
+    const usernameValidation = validateUsername(form.username, { allowReserved: isSolvixOwner(user.id) });
+    const currentUsername = normalizeUsername(profile?.username ?? "");
+    const keepsExistingReservedUsername = !usernameValidation.valid && usernameValidation.username === currentUsername;
+
+    if (!usernameValidation.valid && !keepsExistingReservedUsername) {
+      toast.error(usernameValidation.message);
       return;
     }
+    const normalizedUsername = usernameValidation.username || currentUsername;
 
     setSaving(true);
     try {
@@ -298,7 +303,7 @@ function EditProfilePage() {
                     </span>
                     <Input
                       value={form.username}
-                      onChange={(e) => updateField("username", e.target.value.replace(/\s/g, ""))}
+                      onChange={(e) => updateField("username", normalizeUsername(e.target.value))}
                       placeholder="solvixceo"
                       className="pl-7"
                     />

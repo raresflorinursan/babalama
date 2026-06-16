@@ -9,6 +9,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { BrandMark } from "@/components/BrandMark";
+import { normalizeUsername, validateUsername } from "@/lib/platform-security";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -135,13 +136,18 @@ function SignupForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (password.length < 6) { toast.error("Passwort min. 6 Zeichen"); return; }
+    const usernameValidation = validateUsername(username);
+    if (!usernameValidation.valid) {
+      toast.error(usernameValidation.message);
+      return;
+    }
     setLoading(true);
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         emailRedirectTo: window.location.origin + "/dashboard",
-        data: { username, full_name: username },
+        data: { username: usernameValidation.username, full_name: usernameValidation.username },
       },
     });
     setLoading(false);
@@ -154,7 +160,7 @@ function SignupForm() {
     <form onSubmit={submit} className="mt-4 space-y-3">
       <div>
         <Label htmlFor="su-username">Benutzername</Label>
-        <Input id="su-username" required value={username} onChange={(e) => setUsername(e.target.value)} />
+        <Input id="su-username" required value={username} onChange={(e) => setUsername(normalizeUsername(e.target.value))} />
       </div>
       <div>
         <Label htmlFor="su-email">E-Mail</Label>

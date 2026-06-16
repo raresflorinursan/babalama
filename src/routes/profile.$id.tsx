@@ -9,6 +9,49 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { safeUrl } from "@/lib/safe-url";
 
+const mockProfiles: Record<string, any> = {
+  solvixceo: {
+    id: "solvixceo",
+    username: "solvixceo",
+    full_name: "SolvixCEO",
+    bio: "Baut Solvix als Plattform für Coding, KI, SaaS und echte Projektideen.",
+    avatar_url: null,
+    github_url: null,
+    website_url: null,
+    skills: ["SaaS", "Build in Public", "Community", "KI"],
+  },
+  miacodes: {
+    id: "miacodes",
+    username: "miacodes",
+    full_name: "Mia Dev",
+    bio: "Frontend-Entwicklerin mit Fokus auf React, UI-Systeme und saubere Lernprojekte.",
+    avatar_url: null,
+    github_url: null,
+    website_url: null,
+    skills: ["React", "Frontend", "Design Systems", "Coding"],
+  },
+  agentstack: {
+    id: "agentstack",
+    username: "agentstack",
+    full_name: "AI Builder",
+    bio: "Entwickelt KI-Agenten, Automationen und Workflows für produktive Teams.",
+    avatar_url: null,
+    github_url: null,
+    website_url: null,
+    skills: ["KI-Agenten", "Automation", "APIs", "Workflows"],
+  },
+  noahmvp: {
+    id: "noahmvp",
+    username: "noahmvp",
+    full_name: "Noah SaaS",
+    bio: "Teilt MVPs, SaaS-Experimente und Learnings aus frühen Kundenfeedbacks.",
+    avatar_url: null,
+    github_url: null,
+    website_url: null,
+    skills: ["SaaS", "MVP", "Kundenfeedback", "Startup"],
+  },
+};
+
 export const Route = createFileRoute("/profile/$id")({
   head: () => ({
     meta: [{ title: "Profil — Solvix" }, { name: "description", content: "Solvix Nutzerprofil." }],
@@ -43,7 +86,10 @@ function ProfilePage() {
   });
 
   if (isLoading) return <SiteShell><div className="mx-auto max-w-5xl px-4 py-16">Lädt…</div></SiteShell>;
-  if (!profile) return <SiteShell><div className="mx-auto max-w-3xl px-4 py-24 text-center">Profil nicht gefunden.</div></SiteShell>;
+
+  const visibleProfile = profile ?? mockProfiles[id];
+
+  if (!visibleProfile) return <SiteShell><div className="mx-auto max-w-3xl px-4 py-24 text-center">Profil nicht gefunden.</div></SiteShell>;
 
   const isOwnProfile = user?.id === id;
 
@@ -53,19 +99,19 @@ function ProfilePage() {
         <div className="mx-auto max-w-5xl px-4 py-14 sm:px-6">
           <div className="flex flex-col gap-6 sm:flex-row sm:items-center">
             <div className="h-20 w-20 overflow-hidden rounded-2xl border border-border bg-accent shadow-glow">
-              {profile.avatar_url ? (
-                <img src={profile.avatar_url} alt={profile.full_name ?? profile.username ?? "Profilbild"} className="h-full w-full object-cover" />
+              {visibleProfile.avatar_url ? (
+                <img src={visibleProfile.avatar_url} alt={visibleProfile.full_name ?? visibleProfile.username ?? "Profilbild"} className="h-full w-full object-cover" />
               ) : (
                 <div className="grid h-full w-full place-items-center bg-gradient-primary text-2xl font-semibold text-primary-foreground">
-                  {(profile.username ?? profile.full_name ?? "?").slice(0, 1).toUpperCase()}
+                  {(visibleProfile.username ?? visibleProfile.full_name ?? "?").slice(0, 1).toUpperCase()}
                 </div>
               )}
             </div>
             <div className="flex-1">
               <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                  <h1 className="text-2xl font-semibold">{profile.full_name ?? profile.username}</h1>
-                  {profile.username && <p className="text-sm text-muted-foreground">@{profile.username}</p>}
+                  <h1 className="text-2xl font-semibold">{visibleProfile.full_name ?? visibleProfile.username}</h1>
+                  {visibleProfile.username && <p className="text-sm text-muted-foreground">@{visibleProfile.username}</p>}
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   {isOwnProfile ? (
@@ -112,14 +158,14 @@ function ProfilePage() {
                   </span>
                 </div>
               )}
-              {profile.bio && <p className="mt-2 max-w-xl text-sm text-muted-foreground">{profile.bio}</p>}
+              {visibleProfile.bio && <p className="mt-2 max-w-xl text-sm text-muted-foreground">{visibleProfile.bio}</p>}
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
-                {safeUrl(profile.github_url) && <a href={safeUrl(profile.github_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Github className="h-4 w-4" /> GitHub</a>}
-                {safeUrl(profile.website_url) && <a href={safeUrl(profile.website_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Globe className="h-4 w-4" /> Website</a>}
+                {safeUrl(visibleProfile.github_url) && <a href={safeUrl(visibleProfile.github_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Github className="h-4 w-4" /> GitHub</a>}
+                {safeUrl(visibleProfile.website_url) && <a href={safeUrl(visibleProfile.website_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Globe className="h-4 w-4" /> Website</a>}
               </div>
-              {profile.skills && profile.skills.length > 0 && (
+              {visibleProfile.skills && visibleProfile.skills.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-1.5">
-                  {profile.skills.map((s: string) => (
+                  {visibleProfile.skills.map((s: string) => (
                     <span key={s} className="rounded-md bg-accent px-2 py-1 text-xs text-muted-foreground">{s}</span>
                   ))}
                 </div>
