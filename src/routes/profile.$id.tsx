@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Github, Globe, Pencil } from "lucide-react";
+import { useState } from "react";
+import { Bell, BellOff, Github, Globe, MessageCircle, Pencil, UserCheck, UserPlus } from "lucide-react";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { ProjectCard } from "@/components/projects/ProjectCard";
 import { Button } from "@/components/ui/button";
@@ -18,6 +19,8 @@ export const Route = createFileRoute("/profile/$id")({
 function ProfilePage() {
   const { id } = Route.useParams();
   const { user } = useAuth();
+  const [isFollowing, setIsFollowing] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
 
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile", id],
@@ -42,6 +45,8 @@ function ProfilePage() {
   if (isLoading) return <SiteShell><div className="mx-auto max-w-5xl px-4 py-16">Lädt…</div></SiteShell>;
   if (!profile) return <SiteShell><div className="mx-auto max-w-3xl px-4 py-24 text-center">Profil nicht gefunden.</div></SiteShell>;
 
+  const isOwnProfile = user?.id === id;
+
   return (
     <SiteShell>
       <section className="border-b border-border/60 bg-gradient-hero">
@@ -62,15 +67,51 @@ function ProfilePage() {
                   <h1 className="text-2xl font-semibold">{profile.full_name ?? profile.username}</h1>
                   {profile.username && <p className="text-sm text-muted-foreground">@{profile.username}</p>}
                 </div>
-                {user?.id === id && (
-                  <Button asChild size="sm" variant="outline">
-                    <Link to="/edit-profile">
-                      <Pencil className="mr-2 h-4 w-4" />
-                      Bearbeiten
-                    </Link>
-                  </Button>
-                )}
+                <div className="flex flex-wrap items-center gap-2">
+                  {isOwnProfile ? (
+                    <Button asChild size="sm" variant="outline">
+                      <Link to="/edit-profile">
+                        <Pencil className="mr-2 h-4 w-4" />
+                        Bearbeiten
+                      </Link>
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        size="sm"
+                        onClick={() => setIsFollowing((current) => !current)}
+                        className={isFollowing ? "bg-accent text-foreground hover:bg-accent/80" : "bg-gradient-primary shadow-glow hover:opacity-90"}
+                      >
+                        {isFollowing ? <UserCheck className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                        {isFollowing ? "Entfolgen" : "Folgen"}
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant={notificationsEnabled ? "default" : "outline"}
+                        onClick={() => setNotificationsEnabled((current) => !current)}
+                        className={notificationsEnabled ? "bg-primary text-primary-foreground shadow-glow" : ""}
+                        aria-label={notificationsEnabled ? "Glocke deaktivieren" : "Glocke aktivieren"}
+                      >
+                        {notificationsEnabled ? <Bell className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}
+                      </Button>
+                      <Button size="sm" variant="outline">
+                        <MessageCircle className="mr-2 h-4 w-4" />
+                        Nachricht
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
+              {!isOwnProfile && (
+                <div className="mt-3 flex flex-wrap gap-2 text-xs text-muted-foreground">
+                  <span className="rounded-full border border-border bg-background/60 px-3 py-1">
+                    {isFollowing ? "Du folgst diesem Profil" : "Noch nicht gefolgt"}
+                  </span>
+                  <span className="rounded-full border border-border bg-background/60 px-3 py-1">
+                    {notificationsEnabled ? "Glocke aktiv" : "Glocke aus"}
+                  </span>
+                </div>
+              )}
               {profile.bio && <p className="mt-2 max-w-xl text-sm text-muted-foreground">{profile.bio}</p>}
               <div className="mt-3 flex flex-wrap items-center gap-3 text-sm">
                 {safeUrl(profile.github_url) && <a href={safeUrl(profile.github_url)} target="_blank" rel="noreferrer noopener" className="inline-flex items-center gap-1 text-muted-foreground hover:text-foreground"><Github className="h-4 w-4" /> GitHub</a>}

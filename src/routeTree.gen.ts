@@ -9,7 +9,10 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MeetingsRouteImport } from './routes/meetings'
 import { Route as LearnRouteImport } from './routes/learn'
+import { Route as CommunityRouteImport } from './routes/community'
+import { Route as ChatsRouteImport } from './routes/chats'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -22,9 +25,24 @@ import { Route as AuthenticatedEditProfileRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAskQuestionRouteImport } from './routes/_authenticated/ask-question'
 
+const MeetingsRoute = MeetingsRouteImport.update({
+  id: '/meetings',
+  path: '/meetings',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LearnRoute = LearnRouteImport.update({
   id: '/learn',
   path: '/learn',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CommunityRoute = CommunityRouteImport.update({
+  id: '/community',
+  path: '/community',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ChatsRoute = ChatsRouteImport.update({
+  id: '/chats',
+  path: '/chats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthRoute = AuthRouteImport.update({
@@ -88,7 +106,10 @@ const AuthenticatedAskQuestionRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/chats': typeof ChatsRoute
+  '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
+  '/meetings': typeof MeetingsRoute
   '/ask-question': typeof AuthenticatedAskQuestionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/edit-profile': typeof AuthenticatedEditProfileRoute
@@ -101,7 +122,10 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/chats': typeof ChatsRoute
+  '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
+  '/meetings': typeof MeetingsRoute
   '/ask-question': typeof AuthenticatedAskQuestionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/edit-profile': typeof AuthenticatedEditProfileRoute
@@ -116,7 +140,10 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/chats': typeof ChatsRoute
+  '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
+  '/meetings': typeof MeetingsRoute
   '/_authenticated/ask-question': typeof AuthenticatedAskQuestionRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/edit-profile': typeof AuthenticatedEditProfileRoute
@@ -131,7 +158,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/chats'
+    | '/community'
     | '/learn'
+    | '/meetings'
     | '/ask-question'
     | '/dashboard'
     | '/edit-profile'
@@ -144,7 +174,10 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/chats'
+    | '/community'
     | '/learn'
+    | '/meetings'
     | '/ask-question'
     | '/dashboard'
     | '/edit-profile'
@@ -158,7 +191,10 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/chats'
+    | '/community'
     | '/learn'
+    | '/meetings'
     | '/_authenticated/ask-question'
     | '/_authenticated/dashboard'
     | '/_authenticated/edit-profile'
@@ -173,7 +209,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  ChatsRoute: typeof ChatsRoute
+  CommunityRoute: typeof CommunityRoute
   LearnRoute: typeof LearnRoute
+  MeetingsRoute: typeof MeetingsRoute
   ProfileIdRoute: typeof ProfileIdRoute
   ProjectsIdRoute: typeof ProjectsIdRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
@@ -182,11 +221,32 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/meetings': {
+      id: '/meetings'
+      path: '/meetings'
+      fullPath: '/meetings'
+      preLoaderRoute: typeof MeetingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/learn': {
       id: '/learn'
       path: '/learn'
       fullPath: '/learn'
       preLoaderRoute: typeof LearnRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/community': {
+      id: '/community'
+      path: '/community'
+      fullPath: '/community'
+      preLoaderRoute: typeof CommunityRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/chats': {
+      id: '/chats'
+      path: '/chats'
+      fullPath: '/chats'
+      preLoaderRoute: typeof ChatsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth': {
@@ -290,7 +350,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  ChatsRoute: ChatsRoute,
+  CommunityRoute: CommunityRoute,
   LearnRoute: LearnRoute,
+  MeetingsRoute: MeetingsRoute,
   ProfileIdRoute: ProfileIdRoute,
   ProjectsIdRoute: ProjectsIdRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,

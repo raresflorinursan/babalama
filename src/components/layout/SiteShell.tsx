@@ -4,7 +4,7 @@ import { GalacticBackground } from "@/components/GalacticBackground";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 
-export function SiteShell({ children }: { children: ReactNode }) {
+export function SiteShell({ children, hideFooter = false }: { children: ReactNode; hideFooter?: boolean }) {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   return (
     <div className="relative flex min-h-screen flex-col overflow-x-hidden bg-background">
@@ -13,7 +13,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <main key={pathname} className="page-transition relative z-10 flex-1">
         {children}
       </main>
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 }

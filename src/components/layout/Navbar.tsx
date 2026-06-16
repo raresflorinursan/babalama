@@ -10,6 +10,9 @@ const navItems = [
   { label: "Projekte", to: "/projects" },
   { label: "Fragen", to: "/questions" },
   { label: "Lernen", to: "/learn" },
+  { label: "Community", to: "/community" },
+  { label: "Chats", to: "/chats" },
+  { label: "Meetings", to: "/meetings" },
 ];
 
 export function Navbar() {
