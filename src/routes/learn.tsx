@@ -29,6 +29,8 @@ import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { TiltCard } from "@/components/ui/tilt-card";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 
 type Difficulty = "Starter" | "Anfänger" | "Mittel" | "Fortgeschritten";
 
@@ -360,6 +362,7 @@ export const Route = createFileRoute("/learn")({
 });
 
 function LearnPage() {
+  const { user, loading: authLoading } = useAuth();
   const [selectedModuleId, setSelectedModuleId] = useState(modules[0].id);
   const [completedModuleIds, setCompletedModuleIds] = useState<string[]>([]);
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
@@ -381,6 +384,39 @@ function LearnPage() {
   useEffect(() => {
     window.localStorage.setItem(storageKey, JSON.stringify({ completedModuleIds, quizAnswers }));
   }, [completedModuleIds, quizAnswers]);
+
+  useEffect(() => {
+    if (authLoading || !user) return;
+    let cancelled = false;
+
+    async function loadAccountProgress() {
+      const { data, error } = await supabase
+        .from("learning_progress")
+        .select("module_id, quiz_answer, completed_at")
+        .eq("user_id", user!.id);
+
+      if (error) {
+        console.warn("[learn] Could not load Supabase learning progress.", error.message);
+        return;
+      }
+      if (cancelled) return;
+
+      setQuizAnswers(
+        Object.fromEntries(
+          (data ?? [])
+            .filter((row) => row.quiz_answer !== null)
+            .map((row) => [row.module_id, row.quiz_answer as number]),
+        ),
+      );
+      setCompletedModuleIds((data ?? []).filter((row) => row.completed_at).map((row) => row.module_id));
+    }
+
+    loadAccountProgress();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [authLoading, user]);
 
   const completedCount = completedModuleIds.length;
   const progress = Math.round((completedCount / modules.length) * 100);
@@ -407,14 +443,53 @@ function LearnPage() {
     document.getElementById("learning-dashboard")?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
-  const markModuleComplete = () => {
-    if (!isQuizCorrect) return;
-    setCompletedModuleIds((current) => (current.includes(selectedModule.id) ? current : [...current, selectedModule.id]));
+  const persistAnswer = async (module: LearningModule, answer: number) => {
+    setQuizAnswers((current) => ({ ...current, [module.id]: answer }));
+    if (!user) return;
+
+    const { error } = await supabase.from("learning_progress").upsert(
+      {
+        user_id: user.id,
+        module_id: module.id,
+        quiz_answer: answer,
+        quiz_correct: answer === module.quiz.correctIndex,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: "user_id,module_id" },
+    );
+
+    if (error) console.warn("[learn] Could not persist quiz answer.", error.message);
   };
 
-  const resetProgress = () => {
+  const markModuleComplete = async () => {
+    if (!isQuizCorrect) return;
+    setCompletedModuleIds((current) => (current.includes(selectedModule.id) ? current : [...current, selectedModule.id]));
+    if (!user) return;
+
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("learning_progress").upsert(
+      {
+        user_id: user.id,
+        module_id: selectedModule.id,
+        quiz_answer: currentAnswer,
+        quiz_correct: true,
+        completed_at: now,
+        updated_at: now,
+      },
+      { onConflict: "user_id,module_id" },
+    );
+
+    if (error) console.warn("[learn] Could not persist completed module.", error.message);
+  };
+
+  const resetProgress = async () => {
     setCompletedModuleIds([]);
     setQuizAnswers({});
+    window.localStorage.removeItem(storageKey);
+    if (!user) return;
+
+    const { error } = await supabase.from("learning_progress").delete().eq("user_id", user.id);
+    if (error) console.warn("[learn] Could not reset Supabase learning progress.", error.message);
   };
 
   return (
@@ -560,7 +635,7 @@ function LearnPage() {
                 <QuizCard
                   module={selectedModule}
                   answer={currentAnswer}
-                  onAnswer={(answer) => setQuizAnswers((current) => ({ ...current, [selectedModule.id]: answer }))}
+                  onAnswer={(answer) => persistAnswer(selectedModule, answer)}
                 />
 
                 <div className="mt-6 grid gap-4 lg:grid-cols-[minmax(0,1fr)_240px]">

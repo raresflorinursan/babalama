@@ -9,6 +9,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandMark } from "@/components/BrandMark";
 import { normalizeUsername, validateUsername } from "@/lib/platform-security";
+import { ensureUserProfile } from "@/lib/auth-profile";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -104,11 +105,17 @@ function LoginForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Willkommen zurück!");
-    navigate({ to: "/dashboard" });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      if (data.user) await ensureUserProfile(data.user);
+      toast.success("Willkommen zurück!");
+      navigate({ to: "/dashboard" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Login fehlgeschlagen.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -144,18 +151,30 @@ function SignupForm() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: window.location.origin + "/dashboard",
-        data: { username: usernameValidation.username, full_name: usernameValidation.username },
-      },
-    });
-    setLoading(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Account erstellt. Du bist eingeloggt.");
-    navigate({ to: "/dashboard" });
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: window.location.origin + "/auth/callback",
+          data: { username: usernameValidation.username, full_name: usernameValidation.username },
+        },
+      });
+      if (error) throw error;
+
+      if (data.session && data.user) {
+        await ensureUserProfile(data.user);
+        toast.success("Account erstellt. Du bist eingeloggt.");
+        navigate({ to: "/dashboard" });
+        return;
+      }
+
+      toast.success("Account erstellt. Bitte bestätige deine E-Mail.");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Registrierung fehlgeschlagen.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

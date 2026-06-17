@@ -34,7 +34,6 @@ export function Footer() {
       <div>
         <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 text-xs text-muted-foreground sm:px-6">
           <span>© {new Date().getFullYear()} Solvix</span>
-          <span>Build with code & curiosity.</span>
         </div>
       </div>
     </footer>

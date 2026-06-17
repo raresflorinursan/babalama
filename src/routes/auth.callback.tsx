@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { BrandMark } from "@/components/BrandMark";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureUserProfile } from "@/lib/auth-profile";
 
 export const Route = createFileRoute("/auth/callback")({
   head: () => ({
@@ -35,6 +36,8 @@ function AuthCallbackPage() {
 
         if (cancelled) return;
         if (data.session) {
+          await ensureUserProfile(data.session.user);
+          if (cancelled) return;
           navigate({ to: "/dashboard", replace: true });
           return;
         }

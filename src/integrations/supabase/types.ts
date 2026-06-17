@@ -78,6 +78,48 @@ export type Database = {
           },
         ]
       }
+      community_posts: {
+        Row: {
+          body: string
+          category: string
+          created_at: string
+          id: string
+          image_url: string | null
+          is_removed: boolean
+          removed_at: string | null
+          source_type: string
+          tags: string[]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_removed?: boolean
+          removed_at?: string | null
+          source_type?: string
+          tags?: string[]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          category?: string
+          created_at?: string
+          id?: string
+          image_url?: string | null
+          is_removed?: boolean
+          removed_at?: string | null
+          source_type?: string
+          tags?: string[]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       likes: {
         Row: {
           created_at: string
@@ -106,6 +148,39 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      learning_progress: {
+        Row: {
+          completed_at: string | null
+          created_at: string
+          id: string
+          module_id: string
+          quiz_answer: number | null
+          quiz_correct: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          module_id: string
+          quiz_answer?: number | null
+          quiz_correct?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          module_id?: string
+          quiz_answer?: number | null
+          quiz_correct?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       profiles: {
         Row: {
