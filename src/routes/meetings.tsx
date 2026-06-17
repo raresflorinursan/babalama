@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState, type ReactNode } from "react";
-import { CalendarDays, ChevronDown, Clock3, Copy, Search, Users, Video } from "lucide-react";
+import { CalendarDays, Check, ChevronDown, Clock3, Copy, Search, Users, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteShell } from "@/components/layout/SiteShell";
 
@@ -26,18 +26,10 @@ const account = {
 
 const people = ["Mia Dev", "AI Builder", "Noah SaaS", "Lina Backend"];
 const meetingTypes = ["Code Review", "Design Review", "Pair Coding", "SaaS Feedback", "AI Planning"];
-const quickDates = ["Heute", "Morgen", "Freitag", "Naechste Woche"];
-const calendarDays = [
-  { day: "Mo", date: "17", label: "Mo, 17" },
-  { day: "Di", date: "18", label: "Di, 18" },
-  { day: "Mi", date: "19", label: "Mi, 19" },
-  { day: "Do", date: "20", label: "Do, 20" },
-  { day: "Fr", date: "21", label: "Fr, 21" },
-  { day: "Sa", date: "22", label: "Sa, 22" },
-  { day: "So", date: "23", label: "So, 23" },
-];
-const quickTimes = ["09:00", "10:30", "11:00", "14:00", "15:30", "16:30", "18:00", "19:30"];
-const durations = ["15 min", "30 min", "45 min", "60 min"];
+const hours = Array.from({ length: 24 }, (_, index) => index.toString().padStart(2, "0"));
+const minutes = Array.from({ length: 12 }, (_, index) => (index * 5).toString().padStart(2, "0"));
+const durationOptions = Array.from({ length: 12 }, (_, index) => `${(index + 1) * 15} min`);
+const weekdayLabels = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
 
 const starterMeetings: Meeting[] = [
   {
@@ -100,6 +92,13 @@ function MeetingsPage() {
   const [time, setTime] = useState("14:00");
   const [duration, setDuration] = useState("30 min");
   const [openPicker, setOpenPicker] = useState<"date" | "time" | "duration" | null>(null);
+  const [copiedMeetingId, setCopiedMeetingId] = useState<number | null>(null);
+  const calendarDays = useMemo(() => buildMonthCalendar(new Date()), []);
+  const monthLabel = useMemo(
+    () => new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" }).format(new Date()),
+    [],
+  );
+  const [selectedHour, selectedMinute] = time.split(":");
 
   const filteredMeetings = useMemo(() => {
     const query = searchQuery.trim().toLowerCase();
@@ -135,6 +134,26 @@ function MeetingsPage() {
       ...current,
     ]);
     setTitle("");
+  };
+
+  const copyMeetingLink = async (meeting: Meeting) => {
+    const url = normalizeMeetingLink(meeting.link);
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const textarea = document.createElement("textarea");
+      textarea.value = url;
+      textarea.setAttribute("readonly", "true");
+      textarea.style.position = "fixed";
+      textarea.style.opacity = "0";
+      document.body.appendChild(textarea);
+      textarea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textarea);
+    }
+
+    setCopiedMeetingId(meeting.id);
+    window.setTimeout(() => setCopiedMeetingId((current) => (current === meeting.id ? null : current)), 1400);
   };
 
   return (
@@ -183,35 +202,37 @@ function MeetingsPage() {
                   open={openPicker === "date"}
                   onToggle={() => setOpenPicker((current) => (current === "date" ? null : "date"))}
                 >
-                  <div className="grid grid-cols-2 gap-2">
-                    {quickDates.map((value) => (
-                      <Choice
-                        key={value}
-                        active={date === value}
-                        onClick={() => {
-                          setDate(value);
-                          setOpenPicker(null);
-                        }}
-                      >
-                        {value}
-                      </Choice>
+                  <div className="mb-3 flex items-center justify-between">
+                    <div className="text-sm font-medium capitalize">{monthLabel}</div>
+                    <span className="rounded-full border border-border bg-background/50 px-2 py-0.5 text-[11px] text-muted-foreground">
+                      Monat
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-7 gap-1.5 text-center text-[11px] text-muted-foreground">
+                    {weekdayLabels.map((day) => (
+                      <div key={day} className="py-1">
+                        {day}
+                      </div>
                     ))}
                   </div>
-                  <div className="mt-3 grid grid-cols-7 gap-2">
+                  <div className="mt-1 grid grid-cols-7 gap-1.5">
                     {calendarDays.map((item) => (
                       <button
-                        key={item.label}
+                        key={`${item.label}-${item.date}`}
+                        type="button"
+                        disabled={!item.inMonth}
                         onClick={() => {
                           setDate(item.label);
                           setOpenPicker(null);
                         }}
-                        className={`rounded-xl border px-2 py-2 text-center transition-colors ${
+                        className={`aspect-square rounded-xl border text-center text-sm transition-colors ${
                           date === item.label
                             ? "border-primary bg-primary text-primary-foreground shadow-glow"
-                            : "border-border bg-background/60 text-muted-foreground hover:bg-accent hover:text-foreground"
+                            : item.inMonth
+                              ? "border-border bg-background/60 text-muted-foreground hover:bg-accent hover:text-foreground"
+                              : "border-transparent bg-transparent text-transparent"
                         }`}
                       >
-                        <span className="block text-[10px]">{item.day}</span>
                         <span className="block text-sm font-medium">{item.date}</span>
                       </button>
                     ))}
@@ -225,20 +246,17 @@ function MeetingsPage() {
                   open={openPicker === "time"}
                   onToggle={() => setOpenPicker((current) => (current === "time" ? null : "time"))}
                 >
-                  <div className="grid grid-cols-4 gap-2">
-                    {quickTimes.map((value) => (
-                      <Choice
-                        key={value}
-                        active={time === value}
-                        onClick={() => {
-                          setTime(value);
-                          setOpenPicker(null);
-                        }}
-                      >
-                        {value}
-                      </Choice>
-                    ))}
-                  </div>
+                  <WheelPicker
+                    leftLabel="Stunde"
+                    rightLabel="Minute"
+                    leftOptions={hours}
+                    rightOptions={minutes}
+                    leftValue={selectedHour}
+                    rightValue={selectedMinute}
+                    onLeftChange={(value) => setTime(`${value}:${selectedMinute}`)}
+                    onRightChange={(value) => setTime(`${selectedHour}:${value}`)}
+                    onDone={() => setOpenPicker(null)}
+                  />
                 </PopoverField>
               </div>
 
@@ -249,20 +267,7 @@ function MeetingsPage() {
                 open={openPicker === "duration"}
                 onToggle={() => setOpenPicker((current) => (current === "duration" ? null : "duration"))}
               >
-                <div className="grid grid-cols-4 gap-2">
-                  {durations.map((value) => (
-                    <Choice
-                      key={value}
-                      active={duration === value}
-                      onClick={() => {
-                        setDuration(value);
-                        setOpenPicker(null);
-                      }}
-                    >
-                      {value}
-                    </Choice>
-                  ))}
-                </div>
+                <DurationWheel value={duration} onChange={setDuration} onDone={() => setOpenPicker(null)} />
               </PopoverField>
 
               <Button onClick={createMeeting} disabled={!title.trim()} className="w-full bg-gradient-primary shadow-glow">
@@ -320,9 +325,17 @@ function MeetingsPage() {
                       <Users className="h-3.5 w-3.5 text-primary-glow" />
                       Du + {meeting.with}
                     </div>
-                    <button className="flex min-w-0 items-center justify-between rounded-lg border border-border bg-card px-2 py-1.5 text-left text-[11px] text-muted-foreground hover:text-foreground">
+                    <button
+                      type="button"
+                      onClick={() => copyMeetingLink(meeting)}
+                      className="flex min-w-0 items-center justify-between rounded-lg border border-border bg-card px-2 py-1.5 text-left text-[11px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+                    >
                       <span className="truncate">{meeting.link}</span>
-                      <Copy className="ml-2 h-3.5 w-3.5 shrink-0" />
+                      {copiedMeetingId === meeting.id ? (
+                        <Check className="ml-2 h-3.5 w-3.5 shrink-0 text-primary-glow" />
+                      ) : (
+                        <Copy className="ml-2 h-3.5 w-3.5 shrink-0" />
+                      )}
                     </button>
                   </div>
                 </div>
@@ -333,6 +346,33 @@ function MeetingsPage() {
       </section>
     </SiteShell>
   );
+}
+
+function buildMonthCalendar(baseDate: Date) {
+  const year = baseDate.getFullYear();
+  const month = baseDate.getMonth();
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const startOffset = (firstDay.getDay() + 6) % 7;
+  const cells = startOffset + lastDay.getDate();
+  const totalCells = Math.ceil(cells / 7) * 7;
+
+  return Array.from({ length: totalCells }, (_, index) => {
+    const dayNumber = index - startOffset + 1;
+    const inMonth = dayNumber >= 1 && dayNumber <= lastDay.getDate();
+    const date = inMonth ? new Date(year, month, dayNumber) : new Date(year, month, 1);
+    return {
+      date: inMonth ? dayNumber.toString() : "",
+      inMonth,
+      label: inMonth
+        ? new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "2-digit", month: "2-digit" }).format(date)
+        : "",
+    };
+  });
+}
+
+function normalizeMeetingLink(link: string) {
+  return link.startsWith("http") ? link : `https://${link}`;
 }
 
 function Select({ label, value, onChange, options }: { label: string; value: string; onChange: (value: string) => void; options: string[] }) {
@@ -390,18 +430,80 @@ function PopoverField({
   );
 }
 
-function Choice({ active, onClick, children }: { active: boolean; onClick: () => void; children: ReactNode }) {
+function WheelPicker({
+  leftLabel,
+  rightLabel,
+  leftOptions,
+  rightOptions,
+  leftValue,
+  rightValue,
+  onLeftChange,
+  onRightChange,
+  onDone,
+}: {
+  leftLabel: string;
+  rightLabel: string;
+  leftOptions: string[];
+  rightOptions: string[];
+  leftValue: string;
+  rightValue: string;
+  onLeftChange: (value: string) => void;
+  onRightChange: (value: string) => void;
+  onDone: () => void;
+}) {
   return (
-    <button
-      onClick={onClick}
-      className={`rounded-xl border px-3 py-2 text-sm transition-colors ${
-        active
-          ? "border-primary bg-primary text-primary-foreground shadow-glow"
-          : "border-border bg-background/60 text-muted-foreground hover:bg-accent hover:text-foreground"
-      }`}
-    >
-      {children}
-    </button>
+    <div>
+      <div className="grid grid-cols-2 gap-3">
+        <WheelColumn label={leftLabel} value={leftValue} options={leftOptions} onChange={onLeftChange} />
+        <WheelColumn label={rightLabel} value={rightValue} options={rightOptions} onChange={onRightChange} />
+      </div>
+      <button
+        type="button"
+        onClick={onDone}
+        className="mt-3 w-full rounded-xl border border-primary/40 bg-primary/15 px-3 py-2 text-sm text-primary-glow transition-colors hover:bg-primary/25"
+      >
+        Übernehmen
+      </button>
+    </div>
+  );
+}
+
+function DurationWheel({ value, onChange, onDone }: { value: string; onChange: (value: string) => void; onDone: () => void }) {
+  return (
+    <div>
+      <WheelColumn label="Dauer bis max. 3 Stunden" value={value} options={durationOptions} onChange={onChange} />
+      <button
+        type="button"
+        onClick={onDone}
+        className="mt-3 w-full rounded-xl border border-primary/40 bg-primary/15 px-3 py-2 text-sm text-primary-glow transition-colors hover:bg-primary/25"
+      >
+        Übernehmen
+      </button>
+    </div>
+  );
+}
+
+function WheelColumn({ label, value, options, onChange }: { label: string; value: string; options: string[]; onChange: (value: string) => void }) {
+  return (
+    <div>
+      <div className="mb-1.5 text-center text-[11px] text-muted-foreground">{label}</div>
+      <div className="max-h-44 overflow-y-auto rounded-2xl border border-border bg-background/60 p-1.5 [scrollbar-width:thin]">
+        {options.map((option) => (
+          <button
+            key={option}
+            type="button"
+            onClick={() => onChange(option)}
+            className={`mb-1 flex h-10 w-full items-center justify-center rounded-xl text-sm transition-colors last:mb-0 ${
+              value === option
+                ? "bg-primary text-primary-foreground shadow-glow"
+                : "text-muted-foreground hover:bg-accent hover:text-foreground"
+            }`}
+          >
+            {option}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }
 

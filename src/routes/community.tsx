@@ -217,7 +217,7 @@ function CommunityPage() {
   const [postText, setPostText] = useState("");
   const [posts, setPosts] = useState(starterPosts);
   const [people, setPeople] = useState(peopleSeed);
-  const [activeCategory, setActiveCategory] = useState("Allgemein");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(["Allgemein"]);
   const [searchQuery, setSearchQuery] = useState("");
   const [openMenuId, setOpenMenuId] = useState<number | null>(null);
   const [ignoredHandles, setIgnoredHandles] = useState<string[]>([]);
@@ -241,9 +241,12 @@ function CommunityPage() {
       const author = peopleByHandle.get(post.authorHandle);
       if (!author || ignoredHandles.includes(post.authorHandle)) return false;
 
+      const showAll = selectedCategories.length === 0 || selectedCategories.includes("Allgemein");
       const matchesCategory =
-        activeCategory === "Allgemein" ||
-        (activeCategory === "Gefolgt" ? author.followed : post.category === activeCategory);
+        showAll ||
+        selectedCategories.some((category) =>
+          category === "Gefolgt" ? author.followed : post.category === category,
+        );
 
       const matchesSearch =
         !query ||
@@ -257,7 +260,7 @@ function CommunityPage() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [activeCategory, ignoredHandles, peopleByHandle, posts, searchQuery]);
+  }, [ignoredHandles, peopleByHandle, posts, searchQuery, selectedCategories]);
 
   const matchingPeople = useMemo(() => {
     const query = searchQuery.trim().replace(/^#/, "").toLowerCase();
@@ -335,6 +338,19 @@ function CommunityPage() {
     setShareDialogPostId(null);
   };
 
+  const toggleCategory = (category: string) => {
+    setSelectedCategories((current) => {
+      const isActive = current.includes(category);
+
+      if (category === "Allgemein") {
+        return isActive ? [] : ["Allgemein"];
+      }
+
+      const withoutAll = current.filter((item) => item !== "Allgemein");
+      return isActive ? withoutAll.filter((item) => item !== category) : [...withoutAll, category];
+    });
+  };
+
   return (
     <SiteShell hideFooter>
       <section className="mx-auto max-w-7xl px-4 py-8 sm:px-6">
@@ -352,12 +368,13 @@ function CommunityPage() {
           {categories.map((category) => (
             <button
               key={category}
-              onClick={() => setActiveCategory(category)}
+              onClick={() => toggleCategory(category)}
               className={`inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors ${
-                activeCategory === category
+                selectedCategories.includes(category)
                   ? "bg-primary text-primary-foreground shadow-glow"
                   : "border border-border bg-card/70 text-muted-foreground hover:bg-accent hover:text-foreground"
               }`}
+              aria-pressed={selectedCategories.includes(category)}
             >
               <CategoryIcon category={category} />
               {category}
