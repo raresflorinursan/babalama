@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
-import { lovable } from "@/integrations/lovable/index";
 import { BrandMark } from "@/components/BrandMark";
 import { normalizeUsername, validateUsername } from "@/lib/platform-security";
 
@@ -74,14 +73,17 @@ function GoogleButton() {
   const [loading, setLoading] = useState(false);
   const handle = async () => {
     setLoading(true);
-    const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin + "/auth/callback" });
-    if (result.error) {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${window.location.origin}/auth/callback`,
+      },
+    });
+    if (error) {
       toast.error("Google-Login fehlgeschlagen");
       setLoading(false);
       return;
     }
-    if (result.redirected) return;
-    window.location.href = "/dashboard";
   };
   return (
     <Button onClick={handle} disabled={loading} variant="outline" className="w-full">
