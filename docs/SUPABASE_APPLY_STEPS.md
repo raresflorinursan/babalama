@@ -8,11 +8,11 @@ Das Live-Supabase-Projekt muss denselben sicheren Datenbankstand bekommen wie de
 
 ## Projekt
 
-Aktuelles Projekt aus `.env`:
+Aktuelles Live-Projekt:
 
 ```text
-gixaoqvrywtrhutnvywp
-https://gixaoqvrywtrhutnvywp.supabase.co
+ckmdhrrcevyswacszbrf
+https://ckmdhrrcevyswacszbrf.supabase.co
 ```
 
 ## Reihenfolge im Supabase SQL Editor

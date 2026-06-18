@@ -3,7 +3,7 @@
 This file documents the Supabase SQL queries we used for the current Solvix database hardening pass.
 
 Date: 2026-06-17
-Project ref used locally: `gixaoqvrywtrhutnvywp`
+Live project ref: `ckmdhrrcevyswacszbrf`
 
 ## What Was Applied
 
