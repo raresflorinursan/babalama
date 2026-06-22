@@ -30,9 +30,9 @@ Status: In Arbeit
 - [x] Fragen-Erstellung speichert in Supabase
 - [x] Lernfortschritt als Supabase-Tabelle vorbereitet
 - [x] Lernfortschritt-Migration in der Live-Datenbank anwenden
-- [ ] Community-Posts von Mock-Daten auf Supabase umstellen
-- [ ] Community-Likes auf Supabase umstellen
-- [ ] Community-Kommentare auf Supabase umstellen
+- [x] Community-Posts von Mock-Daten auf Supabase umstellen
+- [x] Community-Likes auf Supabase umstellen
+- [x] Community-Kommentare auf Supabase umstellen
 - [ ] Meetings entweder als Beta markieren oder in Supabase speichern
 
 ## Phase 3: Solvix-Loop
@@ -54,6 +54,7 @@ Status: In Arbeit
 - [x] Private Admin-Tabelle vorbereitet
 - [x] Community-Posts auf menschliche Quelle beschraenkt
 - [x] Basis-Rate-Limits fuer Community-Posts vorbereitet
+- [x] RLS und Rate-Limits fuer Community-Kommentare und Likes eingerichtet
 - [x] Service Role Key wird nicht im Frontend importiert
 - [x] Supabase Release-Hardening-Migration erstellt
 - [x] Härtungs-Migration in Supabase anwenden

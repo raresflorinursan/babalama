@@ -53,7 +53,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-2">
           <button
-            onClick={() => { router.invalidate(); reset(); }}
+            onClick={() => {
+              router.invalidate();
+              reset();
+            }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
             Erneut versuchen
@@ -76,13 +79,20 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
       { title: "Solvix — Coding & KI Community" },
-      { name: "description", content: "Entdecke, teile und baue Coding- und KI-Projekte. Solvix ist die Plattform für Menschen, die lernen, bauen und sich inspirieren lassen wollen." },
+      {
+        name: "description",
+        content:
+          "Entdecke, teile und baue Coding- und KI-Projekte. Solvix ist die Plattform für Menschen, die lernen, bauen und sich inspirieren lassen wollen.",
+      },
       { property: "og:title", content: "Solvix — Coding & KI Community" },
       { property: "og:description", content: "Entdecke, teile und baue Coding- und KI-Projekte." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
-    links: [{ rel: "stylesheet", href: appCss }],
+    links: [
+      { rel: "stylesheet", href: appCss },
+      { rel: "icon", type: "image/png", href: "/solvix-logo.png" },
+    ],
   }),
   shellComponent: RootShell,
   component: RootComponent,

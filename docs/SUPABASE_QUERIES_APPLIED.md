@@ -1133,3 +1133,17 @@ where table_schema in ('public', 'app_private')
   )
 order by table_schema, table_name, grantee, privilege_type;
 ```
+
+## 7. Community Persistence and Editorial Seed (2026-06-22)
+
+Live angewendet als Migration `20260622151253_community_persistence_and_editorial_seed`.
+
+- `community_posts` um redaktionelle Kennzeichnung und echte Zähler erweitert
+- `community_post_comments` mit Owner-RLS und Rate-Limits erstellt
+- `community_post_likes` mit privater Nutzerzuordnung und eindeutigen Likes erstellt
+- Zähler werden ausschließlich über geschützte Trigger aktualisiert
+- zehn Startbeiträge unter dem echten Owner-Konto eingefügt und als `Redaktion` markiert
+- keine künstlichen Likes, Kommentare oder Fake-Nutzer angelegt
+
+Der vollständige, reproduzierbare SQL-Stand liegt in:
+`supabase/migrations/20260622151253_community_persistence_and_editorial_seed.sql`
