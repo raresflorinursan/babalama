@@ -22,7 +22,12 @@ import {
   Workflow,
   Zap,
 } from "lucide-react";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -31,6 +36,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 type Difficulty = "Starter" | "Anfänger" | "Mittel" | "Fortgeschritten";
 
@@ -61,10 +67,14 @@ type LearningModule = {
 };
 
 type ProjectIdea = {
+  moduleId: string;
+  moduleTitle: string;
   title: string;
   description: string;
   difficulty: Difficulty;
   duration: string;
+  category: string;
+  technologies: string[];
   goals: string[];
   requirements: string[];
 };
@@ -82,29 +92,36 @@ const modules: LearningModule[] = [
     difficulty: "Starter",
     duration: "35 min",
     icon: <GraduationCap className="h-5 w-5" />,
-    outcomes: ["Du erkennst den Unterschied zwischen Tool-Nutzer und Builder.", "Du verstehst KI ohne komplizierte Fachsprache.", "Du kannst moderne Software grob einordnen."],
+    outcomes: [
+      "Du erkennst den Unterschied zwischen Tool-Nutzer und Builder.",
+      "Du verstehst KI ohne komplizierte Fachsprache.",
+      "Du kannst moderne Software grob einordnen.",
+    ],
     lessons: [
       {
         title: "Was ist Programmierung?",
-        body:
-          "Programmierung bedeutet, ein Problem in klare Schritte zu zerlegen und diese Schritte so aufzuschreiben, dass ein Computer sie ausführen kann. Der wichtigste Skill ist nicht Syntax, sondern sauberes Denken: Eingabe, Verarbeitung, Ausgabe und Fehlerfälle.",
+        body: "Programmierung bedeutet, ein Problem in klare Schritte zu zerlegen und diese Schritte so aufzuschreiben, dass ein Computer sie ausführen kann. Der wichtigste Skill ist nicht Syntax, sondern sauberes Denken: Eingabe, Verarbeitung, Ausgabe und Fehlerfälle.",
       },
       {
         title: "Was ist KI?",
-        body:
-          "Künstliche Intelligenz beschreibt Systeme, die aus Daten Muster lernen und auf neue Eingaben reagieren. Sie kann Texte erzeugen, Inhalte sortieren, Zusammenfassungen schreiben oder Vorschläge machen. KI ersetzt aber keine Produktlogik. Sie braucht klare Ziele, Kontext und Kontrolle.",
+        body: "Künstliche Intelligenz beschreibt Systeme, die aus Daten Muster lernen und auf neue Eingaben reagieren. Sie kann Texte erzeugen, Inhalte sortieren, Zusammenfassungen schreiben oder Vorschläge machen. KI ersetzt aber keine Produktlogik. Sie braucht klare Ziele, Kontext und Kontrolle.",
       },
       {
         title: "KI vs klassische Programmierung",
-        body:
-          "Klassische Programmierung folgt festen Regeln: Wenn A passiert, mache B. KI arbeitet wahrscheinlicher: Sie berechnet aus Mustern eine passende Antwort. In guten Produkten kombinierst du beides: Code gibt Struktur, KI liefert flexible Unterstützung.",
+        body: "Klassische Programmierung folgt festen Regeln: Wenn A passiert, mache B. KI arbeitet wahrscheinlicher: Sie berechnet aus Mustern eine passende Antwort. In guten Produkten kombinierst du beides: Code gibt Struktur, KI liefert flexible Unterstützung.",
       },
     ],
     quiz: {
       question: "Was beschreibt Programmierung am besten?",
-      options: ["Nur bunte Webseiten gestalten", "Probleme in klare Schritte für Computer übersetzen", "Computer zufällig antworten lassen", "Nur KI-Prompts schreiben"],
+      options: [
+        "Nur bunte Webseiten gestalten",
+        "Probleme in klare Schritte für Computer übersetzen",
+        "Computer zufällig antworten lassen",
+        "Nur KI-Prompts schreiben",
+      ],
       correctIndex: 1,
-      explanation: "Programmierung ist das strukturierte Übersetzen von Problemen in ausführbare Schritte.",
+      explanation:
+        "Programmierung ist das strukturierte Übersetzen von Problemen in ausführbare Schritte.",
     },
     community: {
       discussions: 18,
@@ -122,27 +139,33 @@ const modules: LearningModule[] = [
     difficulty: "Anfänger",
     duration: "55 min",
     icon: <Code2 className="h-5 w-5" />,
-    outcomes: ["Du verstehst Variablen, Listen und Funktionen.", "Du kannst einfache Skripte planen.", "Du weißt, warum Python für KI so beliebt ist."],
+    outcomes: [
+      "Du verstehst Variablen, Listen und Funktionen.",
+      "Du kannst einfache Skripte planen.",
+      "Du weißt, warum Python für KI so beliebt ist.",
+    ],
     lessons: [
       {
         title: "Variablen und Daten",
-        body:
-          "Eine Variable speichert einen Wert, zum Beispiel einen Namen, eine Zahl oder eine Liste. Programme werden nützlich, wenn sie Daten aufnehmen, verändern und wieder ausgeben können.",
+        body: "Eine Variable speichert einen Wert, zum Beispiel einen Namen, eine Zahl oder eine Liste. Programme werden nützlich, wenn sie Daten aufnehmen, verändern und wieder ausgeben können.",
       },
       {
         title: "Funktionen",
-        body:
-          "Funktionen bündeln wiederverwendbare Logik. Statt denselben Code mehrfach zu schreiben, gibst du einer Aufgabe einen Namen und rufst sie später wieder auf.",
+        body: "Funktionen bündeln wiederverwendbare Logik. Statt denselben Code mehrfach zu schreiben, gibst du einer Aufgabe einen Namen und rufst sie später wieder auf.",
       },
       {
         title: "Python in echten Projekten",
-        body:
-          "Python eignet sich für Datenanalyse, Automationen, KI-Workflows, kleine APIs und interne Tools. Es ist oft die Sprache, mit der Prototypen sehr schnell entstehen.",
+        body: "Python eignet sich für Datenanalyse, Automationen, KI-Workflows, kleine APIs und interne Tools. Es ist oft die Sprache, mit der Prototypen sehr schnell entstehen.",
       },
     ],
     quiz: {
       question: "Wofür ist eine Funktion besonders nützlich?",
-      options: ["Um Logik wiederzuverwenden", "Um den Bildschirm dunkler zu machen", "Um Passwörter öffentlich zu speichern", "Um eine Website automatisch zu löschen"],
+      options: [
+        "Um Logik wiederzuverwenden",
+        "Um den Bildschirm dunkler zu machen",
+        "Um Passwörter öffentlich zu speichern",
+        "Um eine Website automatisch zu löschen",
+      ],
       correctIndex: 0,
       explanation: "Funktionen machen Code wiederverwendbar, klarer und leichter testbar.",
     },
@@ -162,27 +185,33 @@ const modules: LearningModule[] = [
     difficulty: "Anfänger",
     duration: "45 min",
     icon: <Database className="h-5 w-5" />,
-    outcomes: ["Du verstehst Requests und Responses.", "Du kennst API-Keys und sichere Nutzung.", "Du kannst erklären, warum fast jedes SaaS APIs braucht."],
+    outcomes: [
+      "Du verstehst Requests und Responses.",
+      "Du kennst API-Keys und sichere Nutzung.",
+      "Du kannst erklären, warum fast jedes SaaS APIs braucht.",
+    ],
     lessons: [
       {
         title: "APIs in einfacher Sprache",
-        body:
-          "Eine API ist wie ein klar geregelter Bestellschalter. Deine App stellt eine Anfrage, die andere Seite liefert eine Antwort. Beispiel: Deine App fragt nach Wetterdaten und bekommt strukturierte Daten zurück.",
+        body: "Eine API ist wie ein klar geregelter Bestellschalter. Deine App stellt eine Anfrage, die andere Seite liefert eine Antwort. Beispiel: Deine App fragt nach Wetterdaten und bekommt strukturierte Daten zurück.",
       },
       {
         title: "Request und Response",
-        body:
-          "Der Request ist die Anfrage. Die Response ist die Antwort. Meist werden Daten als JSON übertragen, also in einer strukturierten Textform, die Apps gut lesen können.",
+        body: "Der Request ist die Anfrage. Die Response ist die Antwort. Meist werden Daten als JSON übertragen, also in einer strukturierten Textform, die Apps gut lesen können.",
       },
       {
         title: "API-Keys",
-        body:
-          "Ein API-Key ist ein Zugangsschlüssel zu einem Dienst. Öffentliche Frontend-Keys dürfen nur begrenzte Rechte haben. Gehe nie leichtfertig mit geheimen Service-Keys um.",
+        body: "Ein API-Key ist ein Zugangsschlüssel zu einem Dienst. Öffentliche Frontend-Keys dürfen nur begrenzte Rechte haben. Gehe nie leichtfertig mit geheimen Service-Keys um.",
       },
     ],
     quiz: {
       question: "Was macht eine API?",
-      options: ["Sie verbindet Systeme über klare Anfragen und Antworten", "Sie ersetzt immer jede Datenbank", "Sie ist nur ein Design-Element", "Sie löscht automatisch Nutzer"],
+      options: [
+        "Sie verbindet Systeme über klare Anfragen und Antworten",
+        "Sie ersetzt immer jede Datenbank",
+        "Sie ist nur ein Design-Element",
+        "Sie löscht automatisch Nutzer",
+      ],
       correctIndex: 0,
       explanation: "APIs verbinden Systeme und transportieren Daten über definierte Regeln.",
     },
@@ -202,27 +231,33 @@ const modules: LearningModule[] = [
     difficulty: "Mittel",
     duration: "60 min",
     icon: <Brain className="h-5 w-5" />,
-    outcomes: ["Du verstehst LLMs ohne Hype.", "Du kannst bessere Prompts schreiben.", "Du erkennst Grenzen und Kontrollpunkte von KI."],
+    outcomes: [
+      "Du verstehst LLMs ohne Hype.",
+      "Du kannst bessere Prompts schreiben.",
+      "Du erkennst Grenzen und Kontrollpunkte von KI.",
+    ],
     lessons: [
       {
         title: "Was sind LLMs?",
-        body:
-          "LLMs sind große Sprachmodelle. Sie wurden mit sehr vielen Texten trainiert und können Sprache verstehen, fortsetzen, strukturieren und generieren. Sie wissen nicht im menschlichen Sinn, sondern berechnen wahrscheinliche Antworten.",
+        body: "LLMs sind große Sprachmodelle. Sie wurden mit sehr vielen Texten trainiert und können Sprache verstehen, fortsetzen, strukturieren und generieren. Sie wissen nicht im menschlichen Sinn, sondern berechnen wahrscheinliche Antworten.",
       },
       {
         title: "Was ist ChatGPT?",
-        body:
-          "ChatGPT ist eine Oberfläche und ein Produkt rund um Sprachmodelle. Es macht LLMs über einen Chat nutzbar. In eigenen Apps nutzt man oft APIs, um ähnliche Fähigkeiten in Workflows einzubauen.",
+        body: "ChatGPT ist eine Oberfläche und ein Produkt rund um Sprachmodelle. Es macht LLMs über einen Chat nutzbar. In eigenen Apps nutzt man oft APIs, um ähnliche Fähigkeiten in Workflows einzubauen.",
       },
       {
         title: "Wie funktionieren Prompts?",
-        body:
-          "Ein Prompt ist die Aufgabe, die du der KI gibst. Gute Prompts enthalten Ziel, Kontext, gewünschtes Format, Einschränkungen und Beispiele. Je klarer die Aufgabe, desto besser prüfbar das Ergebnis.",
+        body: "Ein Prompt ist die Aufgabe, die du der KI gibst. Gute Prompts enthalten Ziel, Kontext, gewünschtes Format, Einschränkungen und Beispiele. Je klarer die Aufgabe, desto besser prüfbar das Ergebnis.",
       },
     ],
     quiz: {
       question: "Was macht einen guten Prompt aus?",
-      options: ["Er ist möglichst geheimnisvoll", "Er enthält Ziel, Kontext und gewünschtes Ausgabeformat", "Er besteht nur aus einem Emoji", "Er vermeidet jede konkrete Anweisung"],
+      options: [
+        "Er ist möglichst geheimnisvoll",
+        "Er enthält Ziel, Kontext und gewünschtes Ausgabeformat",
+        "Er besteht nur aus einem Emoji",
+        "Er vermeidet jede konkrete Anweisung",
+      ],
       correctIndex: 1,
       explanation: "Gute Prompts geben der KI Ziel, Kontext, Regeln und ein klares Ausgabeformat.",
     },
@@ -242,27 +277,33 @@ const modules: LearningModule[] = [
     difficulty: "Mittel",
     duration: "50 min",
     icon: <Workflow className="h-5 w-5" />,
-    outcomes: ["Du erkennst automatisierbare Prozesse.", "Du verstehst Trigger und Aktionen.", "Du kannst einfache Workflows planen."],
+    outcomes: [
+      "Du erkennst automatisierbare Prozesse.",
+      "Du verstehst Trigger und Aktionen.",
+      "Du kannst einfache Workflows planen.",
+    ],
     lessons: [
       {
         title: "Trigger und Aktionen",
-        body:
-          "Ein Trigger startet einen Ablauf, zum Beispiel ein Formular, eine neue E-Mail oder ein Zeitplan. Eine Aktion ist das, was danach passiert: speichern, sortieren, senden, auswerten oder benachrichtigen.",
+        body: "Ein Trigger startet einen Ablauf, zum Beispiel ein Formular, eine neue E-Mail oder ein Zeitplan. Eine Aktion ist das, was danach passiert: speichern, sortieren, senden, auswerten oder benachrichtigen.",
       },
       {
         title: "Warum Automationen oft scheitern",
-        body:
-          "Viele Automationen scheitern, weil Fehlerfälle fehlen. Gute Workflows haben Logs, klare Zustände, Wiederholungen und einfache manuelle Kontrolle.",
+        body: "Viele Automationen scheitern, weil Fehlerfälle fehlen. Gute Workflows haben Logs, klare Zustände, Wiederholungen und einfache manuelle Kontrolle.",
       },
       {
         title: "KI in Automationen",
-        body:
-          "KI kann Texte zusammenfassen, Kategorien erkennen oder Vorschläge erzeugen. Der Code drumherum entscheidet aber, wann KI genutzt wird und wohin das Ergebnis gespeichert wird.",
+        body: "KI kann Texte zusammenfassen, Kategorien erkennen oder Vorschläge erzeugen. Der Code drumherum entscheidet aber, wann KI genutzt wird und wohin das Ergebnis gespeichert wird.",
       },
     ],
     quiz: {
       question: "Was ist ein Trigger?",
-      options: ["Ein Ereignis, das einen Workflow startet", "Eine reine Farbe im Interface", "Ein Datenbank-Passwort", "Ein fertiger SaaS-Preisplan"],
+      options: [
+        "Ein Ereignis, das einen Workflow startet",
+        "Eine reine Farbe im Interface",
+        "Ein Datenbank-Passwort",
+        "Ein fertiger SaaS-Preisplan",
+      ],
       correctIndex: 0,
       explanation: "Ein Trigger ist der Startpunkt einer Automation.",
     },
@@ -282,29 +323,36 @@ const modules: LearningModule[] = [
     difficulty: "Fortgeschritten",
     duration: "75 min",
     icon: <Rocket className="h-5 w-5" />,
-    outcomes: ["Du verstehst MVP-Denken.", "Du kannst eine SaaS-Idee strukturieren.", "Du erkennst, welche Features zuerst wichtig sind."],
+    outcomes: [
+      "Du verstehst MVP-Denken.",
+      "Du kannst eine SaaS-Idee strukturieren.",
+      "Du erkennst, welche Features zuerst wichtig sind.",
+    ],
     lessons: [
       {
         title: "Problem vor Feature",
-        body:
-          "Ein gutes SaaS startet nicht mit einer langen Feature-Liste, sondern mit einem echten wiederkehrenden Problem. Erst wenn das Problem klar ist, lohnt sich das Produkt.",
+        body: "Ein gutes SaaS startet nicht mit einer langen Feature-Liste, sondern mit einem echten wiederkehrenden Problem. Erst wenn das Problem klar ist, lohnt sich das Produkt.",
       },
       {
         title: "MVP",
-        body:
-          "Ein MVP ist die kleinste Version, mit der du echten Nutzen testen kannst. Es muss nicht perfekt sein, aber es muss ein konkretes Ergebnis liefern.",
+        body: "Ein MVP ist die kleinste Version, mit der du echten Nutzen testen kannst. Es muss nicht perfekt sein, aber es muss ein konkretes Ergebnis liefern.",
       },
       {
         title: "Produktentwicklung",
-        body:
-          "Produktentwicklung bedeutet, Nutzerproblem, Interface, Daten, Technik und Feedback zusammenzubringen. Gute Produkte werden nicht nur gebaut, sondern regelmäßig verbessert.",
+        body: "Produktentwicklung bedeutet, Nutzerproblem, Interface, Daten, Technik und Feedback zusammenzubringen. Gute Produkte werden nicht nur gebaut, sondern regelmäßig verbessert.",
       },
     ],
     quiz: {
       question: "Was ist ein MVP?",
-      options: ["Die kleinste testbare Produktversion mit echtem Nutzen", "Ein fertiges Konzernprodukt", "Eine Animation im Header", "Ein Passwort-Manager"],
+      options: [
+        "Die kleinste testbare Produktversion mit echtem Nutzen",
+        "Ein fertiges Konzernprodukt",
+        "Eine Animation im Header",
+        "Ein Passwort-Manager",
+      ],
       correctIndex: 0,
-      explanation: "Ein MVP liefert den kleinsten echten Nutzen, um eine Idee schnell mit Nutzern zu testen.",
+      explanation:
+        "Ein MVP liefert den kleinsten echten Nutzen, um eine Idee schnell mit Nutzern zu testen.",
     },
     community: {
       discussions: 22,
@@ -316,34 +364,80 @@ const modules: LearningModule[] = [
 
 const projects: ProjectIdea[] = [
   {
-    title: "GPT Chatbot",
-    description: "Baue einen kleinen Chatbot, der Nutzerfragen annimmt, eine KI-Antwort erzeugt und den Verlauf lokal oder in einer Datenbank speichert.",
-    difficulty: "Anfänger",
-    duration: "2 Stunden",
-    goals: ["APIs verstehen", "KI-Antworten anzeigen", "Chat-UI bauen"],
-    requirements: ["JavaScript-Grundlagen", "Ein API-Key", "Ein einfaches Formular"],
+    moduleId: "foundations",
+    moduleTitle: "Grundlagen",
+    title: "Problem-Solver Canvas",
+    description:
+      "Baue eine kleine Web-App, die ein Alltagsproblem in Eingabe, Verarbeitung, Ausgabe und Fehlerfälle zerlegt.",
+    difficulty: "Starter",
+    duration: "60 min",
+    category: "Webentwicklung",
+    technologies: ["HTML", "CSS", "JavaScript"],
+    goals: ["Probleme strukturieren", "Produktlogik planen", "Ergebnis sichtbar machen"],
+    requirements: ["Modul Grundlagen", "Browser", "Texteditor"],
   },
   {
-    title: "Projektideen-Bot",
-    description: "Ein Tool, das aus Thema und Niveau automatisch eine passende Coding-Aufgabe mit Lernzielen und nächstem Schritt erzeugt.",
+    moduleId: "python",
+    moduleTitle: "Python Grundlagen",
+    title: "Python Aufgabenplaner",
+    description:
+      "Entwickle ein kleines Python-Programm, das Aufgaben speichert, priorisiert und erledigte Einträge ausgibt.",
     difficulty: "Anfänger",
     duration: "90 min",
-    goals: ["Prompts strukturieren", "Level-Logik bauen", "Output formatieren"],
-    requirements: ["Grundlagen", "Prompt-Verständnis"],
+    category: "Python",
+    technologies: ["Python", "JSON"],
+    goals: ["Variablen einsetzen", "Funktionen bauen", "Daten speichern"],
+    requirements: ["Python installiert", "Modul Python Grundlagen"],
   },
   {
-    title: "Lead-Sortierer",
-    description: "Eine Automation, die Firmenkontakte nach Branche, Größe oder Relevanz sortiert und als Tabelle speichert.",
+    moduleId: "apis",
+    moduleTitle: "APIs verstehen",
+    title: "Live API Dashboard",
+    description:
+      "Rufe eine öffentliche API ab und zeige Ladezustand, Ergebnis und Fehler verständlich in einem Dashboard an.",
+    difficulty: "Anfänger",
+    duration: "2 Stunden",
+    category: "JavaScript",
+    technologies: ["JavaScript", "REST API", "JSON"],
+    goals: ["Requests senden", "Responses verarbeiten", "Fehlerzustände darstellen"],
+    requirements: ["JavaScript-Grundlagen", "Modul APIs verstehen"],
+  },
+  {
+    moduleId: "ai-practice",
+    moduleTitle: "KI praktisch einsetzen",
+    title: "GPT Chatbot",
+    description:
+      "Baue einen kleinen Chatbot, der Nutzerfragen annimmt, eine KI-Antwort erzeugt und den Verlauf speichert.",
     difficulty: "Mittel",
     duration: "3 Stunden",
-    goals: ["Daten strukturieren", "APIs verbinden", "Automatisierung planen"],
-    requirements: ["APIs", "Datenmodell", "Basis-UI"],
+    category: "KI",
+    technologies: ["JavaScript", "LLM API", "Supabase"],
+    goals: ["Prompts strukturieren", "KI-Antworten prüfen", "Chat-Verlauf speichern"],
+    requirements: ["API-Verständnis", "Sicherer Umgang mit API-Keys"],
   },
   {
+    moduleId: "automation",
+    moduleTitle: "Automatisierungen bauen",
+    title: "Lead-Sortierer",
+    description:
+      "Baue eine Automation, die Kontakte nach Branche, Größe oder Relevanz sortiert und nachvollziehbar speichert.",
+    difficulty: "Mittel",
+    duration: "3 Stunden",
+    category: "Automatisierung",
+    technologies: ["Python", "API", "Supabase"],
+    goals: ["Daten strukturieren", "APIs verbinden", "Automatisierung planen"],
+    requirements: ["API-Modul", "Datenmodell", "Automation-Modul"],
+  },
+  {
+    moduleId: "saas",
+    moduleTitle: "Eigene SaaS entwickeln",
     title: "Mini-SaaS Dashboard",
-    description: "Baue ein einfaches Dashboard mit Login, Nutzerprofil, Kennzahlen und einem gespeicherten Datensatz.",
+    description:
+      "Baue ein fokussiertes SaaS-MVP mit Login, Nutzerprofil, einer Kernfunktion und einem gespeicherten Datensatz.",
     difficulty: "Fortgeschritten",
     duration: "1 Tag",
+    category: "SaaS",
+    technologies: ["React", "Supabase", "TypeScript"],
     goals: ["Auth verstehen", "Datenbank nutzen", "SaaS-Struktur aufbauen"],
     requirements: ["React/JS", "Supabase-Grundlagen", "MVP-Denken"],
   },
@@ -353,9 +447,15 @@ export const Route = createFileRoute("/learn")({
   head: () => ({
     meta: [
       { title: "Lernen — Solvix" },
-      { name: "description", content: "Interaktiver Lernpfad für Coding, KI, APIs, Automatisierung und SaaS." },
+      {
+        name: "description",
+        content: "Interaktiver Lernpfad für Coding, KI, APIs, Automatisierung und SaaS.",
+      },
       { property: "og:title", content: "Solvix Lernen" },
-      { property: "og:description", content: "Baue echte KI- und Coding-Projekte statt nur Theorie zu lernen." },
+      {
+        property: "og:description",
+        content: "Baue echte KI- und Coding-Projekte statt nur Theorie zu lernen.",
+      },
     ],
   }),
   component: LearnPage,
@@ -368,12 +468,16 @@ function LearnPage() {
   const [quizAnswers, setQuizAnswers] = useState<Record<string, number>>({});
   const [projectSearch, setProjectSearch] = useState("");
   const selectedModule = modules.find((module) => module.id === selectedModuleId) ?? modules[0];
+  const selectedProject = projects.find((project) => project.moduleId === selectedModule.id);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(storageKey);
     if (!stored) return;
     try {
-      const parsed = JSON.parse(stored) as { completedModuleIds?: string[]; quizAnswers?: Record<string, number> };
+      const parsed = JSON.parse(stored) as {
+        completedModuleIds?: string[];
+        quizAnswers?: Record<string, number>;
+      };
       setCompletedModuleIds(parsed.completedModuleIds ?? []);
       setQuizAnswers(parsed.quizAnswers ?? {});
     } catch {
@@ -408,7 +512,9 @@ function LearnPage() {
             .map((row) => [row.module_id, row.quiz_answer as number]),
         ),
       );
-      setCompletedModuleIds((data ?? []).filter((row) => row.completed_at).map((row) => row.module_id));
+      setCompletedModuleIds(
+        (data ?? []).filter((row) => row.completed_at).map((row) => row.module_id),
+      );
     }
 
     loadAccountProgress();
@@ -434,13 +540,29 @@ function LearnPage() {
     );
   }, [projectSearch]);
 
-  const statusLabel = progress === 100 ? "Lernpfad abgeschlossen" : progress > 0 ? "Aktiv im Lernpfad" : "Bereit zum Start";
-  const levelLabel = progress >= 84 ? "Builder" : progress >= 50 ? "Practitioner" : progress >= 17 ? "Explorer" : "Starter";
+  const statusLabel =
+    progress === 100
+      ? "Lernpfad abgeschlossen"
+      : progress > 0
+        ? "Aktiv im Lernpfad"
+        : "Bereit zum Start";
+  const levelLabel =
+    progress >= 84
+      ? "Builder"
+      : progress >= 50
+        ? "Practitioner"
+        : progress >= 17
+          ? "Explorer"
+          : "Starter";
 
   const continueLearning = () => {
-    const nextModule = modules.find((module) => !completedModuleIds.includes(module.id)) ?? modules[modules.length - 1];
+    const nextModule =
+      modules.find((module) => !completedModuleIds.includes(module.id)) ??
+      modules[modules.length - 1];
     setSelectedModuleId(nextModule.id);
-    document.getElementById("learning-dashboard")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    document
+      .getElementById("learning-dashboard")
+      ?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   const persistAnswer = async (module: LearningModule, answer: number) => {
@@ -458,13 +580,17 @@ function LearnPage() {
       { onConflict: "user_id,module_id" },
     );
 
-    if (error) console.warn("[learn] Could not persist quiz answer.", error.message);
+    if (error) toast.error("Quiz-Antwort konnte nicht gespeichert werden.");
   };
 
   const markModuleComplete = async () => {
     if (!isQuizCorrect) return;
-    setCompletedModuleIds((current) => (current.includes(selectedModule.id) ? current : [...current, selectedModule.id]));
-    if (!user) return;
+    if (!user) {
+      setCompletedModuleIds((current) =>
+        current.includes(selectedModule.id) ? current : [...current, selectedModule.id],
+      );
+      return;
+    }
 
     const now = new Date().toISOString();
     const { error } = await supabase.from("learning_progress").upsert(
@@ -479,7 +605,14 @@ function LearnPage() {
       { onConflict: "user_id,module_id" },
     );
 
-    if (error) console.warn("[learn] Could not persist completed module.", error.message);
+    if (error) {
+      toast.error("Modulabschluss konnte nicht gespeichert werden.");
+      return;
+    }
+    setCompletedModuleIds((current) =>
+      current.includes(selectedModule.id) ? current : [...current, selectedModule.id],
+    );
+    toast.success("Modul abgeschlossen. Dein Profil wurde aktualisiert.");
   };
 
   const resetProgress = async () => {
@@ -506,7 +639,8 @@ function LearnPage() {
               Baue echte KI- und Coding-Projekte statt nur Theorie zu lernen.
             </h1>
             <p className="mt-5 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg">
-              Ein klarer Lernpfad von Grundlagen bis SaaS: kurze Lektionen, direkte Wissenskontrolle, Projektideen und Community-Fragen an einem Ort.
+              Ein klarer Lernpfad von Grundlagen bis SaaS: kurze Lektionen, direkte
+              Wissenskontrolle, Projektideen und Community-Fragen an einem Ort.
             </p>
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Button onClick={continueLearning} className="bg-gradient-primary shadow-glow">
@@ -542,9 +676,21 @@ function LearnPage() {
               <Metric value={`${Object.keys(quizAnswers).length}`} label="Quiz" />
             </div>
             <div className="mt-5 flex flex-wrap gap-2">
-              <LearningBadge active={completedCount >= 1} icon={<BadgeCheck className="h-3.5 w-3.5" />} label="First Module" />
-              <LearningBadge active={completedCount >= 3} icon={<Flame className="h-3.5 w-3.5" />} label="Momentum" />
-              <LearningBadge active={completedCount === modules.length} icon={<Rocket className="h-3.5 w-3.5" />} label="SaaS Ready" />
+              <LearningBadge
+                active={completedCount >= 1}
+                icon={<BadgeCheck className="h-3.5 w-3.5" />}
+                label="First Module"
+              />
+              <LearningBadge
+                active={completedCount >= 3}
+                icon={<Flame className="h-3.5 w-3.5" />}
+                label="Momentum"
+              />
+              <LearningBadge
+                active={completedCount === modules.length}
+                icon={<Rocket className="h-3.5 w-3.5" />}
+                label="SaaS Ready"
+              />
             </div>
           </div>
         </div>
@@ -570,10 +716,14 @@ function LearnPage() {
                       <button
                         onClick={() => setSelectedModuleId(module.id)}
                         className={`flex w-full items-start gap-4 rounded-2xl border p-4 text-left shadow-card-elegant transition-colors ${
-                          selected ? "border-primary/55 bg-primary/10" : "border-border bg-card/70 hover:border-primary/35"
+                          selected
+                            ? "border-primary/55 bg-primary/10"
+                            : "border-border bg-card/70 hover:border-primary/35"
                         }`}
                       >
-                        <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${completed ? "bg-primary text-primary-foreground" : "bg-accent text-primary-glow"}`}>
+                        <div
+                          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ${completed ? "bg-primary text-primary-foreground" : "bg-accent text-primary-glow"}`}
+                        >
                           {completed ? <CheckCircle2 className="h-5 w-5" /> : module.icon}
                         </div>
                         <div className="min-w-0 flex-1">
@@ -582,7 +732,9 @@ function LearnPage() {
                             <StatusPill completed={completed} answered={answered} />
                           </div>
                           <h3 className="mt-1 font-medium">{module.title}</h3>
-                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{module.subtitle}</p>
+                          <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                            {module.subtitle}
+                          </p>
                           <div className="mt-3 flex flex-wrap gap-2">
                             <SmallPill>{module.difficulty}</SmallPill>
                             <SmallPill>{module.duration}</SmallPill>
@@ -598,12 +750,18 @@ function LearnPage() {
                 <div className="flex flex-col gap-5 lg:flex-row lg:items-start lg:justify-between">
                   <div>
                     <div className="flex flex-wrap items-center gap-2">
-                      <Badge variant="outline" className="border-primary/30 text-primary-glow">Modul {selectedModule.number}</Badge>
+                      <Badge variant="outline" className="border-primary/30 text-primary-glow">
+                        Modul {selectedModule.number}
+                      </Badge>
                       <Badge variant="secondary">{selectedModule.difficulty}</Badge>
                       <Badge variant="outline">{selectedModule.duration}</Badge>
                     </div>
-                    <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">{selectedModule.title}</h2>
-                    <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">{selectedModule.description}</p>
+                    <h2 className="mt-4 text-2xl font-semibold tracking-tight sm:text-3xl">
+                      {selectedModule.title}
+                    </h2>
+                    <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+                      {selectedModule.description}
+                    </p>
                   </div>
                   <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-primary/10 text-primary-glow">
                     {selectedModule.icon}
@@ -612,16 +770,28 @@ function LearnPage() {
 
                 <div className="mt-6 grid gap-3 sm:grid-cols-3">
                   {selectedModule.outcomes.map((outcome) => (
-                    <div key={outcome} className="rounded-xl border border-border bg-background/45 p-3 text-sm leading-relaxed text-muted-foreground">
+                    <div
+                      key={outcome}
+                      className="rounded-xl border border-border bg-background/45 p-3 text-sm leading-relaxed text-muted-foreground"
+                    >
                       <CheckCircle2 className="mb-2 h-4 w-4 text-primary-glow" />
                       {outcome}
                     </div>
                   ))}
                 </div>
 
-                <Accordion type="single" collapsible defaultValue="lesson-0" className="mt-7 rounded-2xl border border-border bg-background/35 px-4">
+                <Accordion
+                  type="single"
+                  collapsible
+                  defaultValue="lesson-0"
+                  className="mt-7 rounded-2xl border border-border bg-background/35 px-4"
+                >
                   {selectedModule.lessons.map((lesson, index) => (
-                    <AccordionItem key={lesson.title} value={`lesson-${index}`} className="border-border">
+                    <AccordionItem
+                      key={lesson.title}
+                      value={`lesson-${index}`}
+                      className="border-border"
+                    >
                       <AccordionTrigger className="text-left text-sm font-medium hover:text-primary-glow">
                         {lesson.title}
                       </AccordionTrigger>
@@ -644,12 +814,16 @@ function LearnPage() {
                       <MessageCircle className="h-4 w-4 text-primary-glow" />
                       Community zum Modul
                     </div>
-                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{selectedModule.community.question}</p>
+                    <p className="mt-3 text-sm leading-relaxed text-muted-foreground">
+                      {selectedModule.community.question}
+                    </p>
                     <div className="mt-3 rounded-xl border border-border bg-card/60 p-3 text-sm text-muted-foreground">
                       <span className="text-foreground">Tipp:</span> {selectedModule.community.tip}
                     </div>
                     <div className="mt-4 flex flex-wrap items-center gap-3">
-                      <Badge variant="secondary">{selectedModule.community.discussions} Diskussionen</Badge>
+                      <Badge variant="secondary">
+                        {selectedModule.community.discussions} Diskussionen
+                      </Badge>
                       <Button variant="outline" size="sm" asChild>
                         <Link to="/community">Frage stellen</Link>
                       </Button>
@@ -659,13 +833,36 @@ function LearnPage() {
                   <div className="rounded-2xl border border-border bg-background/45 p-4">
                     <p className="text-sm font-medium">Modulabschluss</p>
                     <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                      Beantworte das Quiz richtig, um das Modul abzuschließen und deinen Fortschritt zu speichern.
+                      Beantworte das Quiz richtig, um das Modul abzuschließen und deinen Fortschritt
+                      zu speichern.
                     </p>
-                    <Button onClick={markModuleComplete} disabled={!isQuizCorrect} className="mt-4 w-full bg-gradient-primary shadow-glow">
+                    <Button
+                      onClick={markModuleComplete}
+                      disabled={!isQuizCorrect}
+                      className="mt-4 w-full bg-gradient-primary shadow-glow"
+                    >
                       Modul abschließen
                     </Button>
+                    {selectedProject &&
+                      (isQuizCorrect || completedModuleIds.includes(selectedModule.id)) && (
+                        <Button asChild variant="outline" className="mt-2 w-full">
+                          <Link
+                            to="/upload-project"
+                            search={{
+                              module: selectedProject.moduleId,
+                              challenge: selectedProject.title,
+                            }}
+                          >
+                            Projektaufgabe starten
+                            <Rocket className="ml-2 h-4 w-4" />
+                          </Link>
+                        </Button>
+                      )}
                     {completedModuleIds.length > 0 && (
-                      <button onClick={resetProgress} className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground">
+                      <button
+                        onClick={resetProgress}
+                        className="mt-3 w-full text-xs text-muted-foreground hover:text-foreground"
+                      >
                         Fortschritt zurücksetzen
                       </button>
                     )}
@@ -681,7 +878,8 @@ function LearnPage() {
                 <div>
                   <h2 className="text-2xl font-semibold tracking-tight">Projektbereich</h2>
                   <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
-                    Wähle Projekte, die direkt zu deinem Lernpfad passen. Jedes Projekt zeigt Ziel, Aufwand und Voraussetzungen.
+                    Wähle Projekte, die direkt zu deinem Lernpfad passen. Jedes Projekt zeigt Ziel,
+                    Aufwand und Voraussetzungen.
                   </p>
                 </div>
                 <label className="flex min-w-0 items-center gap-2 rounded-full border border-border bg-background/60 px-4 py-2.5 text-sm text-muted-foreground lg:w-80">
@@ -708,17 +906,29 @@ function LearnPage() {
               <CommunityPanel
                 icon={<CircleHelp className="h-5 w-5" />}
                 title="Fragen anderer Nutzer"
-                items={["Was ist der Unterschied zwischen API und Datenbank?", "Wie starte ich mit Python, wenn ich nur Web kann?", "Welche KI-Projekte sind gut für Anfänger?"]}
+                items={[
+                  "Was ist der Unterschied zwischen API und Datenbank?",
+                  "Wie starte ich mit Python, wenn ich nur Web kann?",
+                  "Welche KI-Projekte sind gut für Anfänger?",
+                ]}
               />
               <CommunityPanel
                 icon={<Lightbulb className="h-5 w-5" />}
                 title="Community-Tipps"
-                items={["Baue kleine Projekte mit sichtbarem Ergebnis.", "Teste Prompts immer mit echten Beispielen.", "Dokumentiere jeden Fehler als Lernnotiz."]}
+                items={[
+                  "Baue kleine Projekte mit sichtbarem Ergebnis.",
+                  "Teste Prompts immer mit echten Beispielen.",
+                  "Dokumentiere jeden Fehler als Lernnotiz.",
+                ]}
               />
               <CommunityPanel
                 icon={<Bot className="h-5 w-5" />}
                 title="Direkt verbinden"
-                items={["Diskussion zum aktuellen Modul starten", "Projektidee in der Community posten", "Feedback für dein MVP einsammeln"]}
+                items={[
+                  "Diskussion zum aktuellen Modul starten",
+                  "Projektidee in der Community posten",
+                  "Feedback für dein MVP einsammeln",
+                ]}
                 cta
               />
             </div>
@@ -729,7 +939,15 @@ function LearnPage() {
   );
 }
 
-function QuizCard({ module, answer, onAnswer }: { module: LearningModule; answer?: number; onAnswer: (answer: number) => void }) {
+function QuizCard({
+  module,
+  answer,
+  onAnswer,
+}: {
+  module: LearningModule;
+  answer?: number;
+  onAnswer: (answer: number) => void;
+}) {
   const answered = answer !== undefined;
   const correct = answer === module.quiz.correctIndex;
 
@@ -741,7 +959,9 @@ function QuizCard({ module, answer, onAnswer }: { module: LearningModule; answer
             <BookOpen className="h-4 w-4 text-primary-glow" />
             Wissenskontrolle
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{module.quiz.question}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {module.quiz.question}
+          </p>
         </div>
         <Badge variant={answered ? (correct ? "secondary" : "destructive") : "outline"}>
           {answered ? (correct ? "Richtig" : "Nochmal prüfen") : "Offen"}
@@ -774,7 +994,9 @@ function QuizCard({ module, answer, onAnswer }: { module: LearningModule; answer
       </div>
 
       {answered && (
-        <div className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed ${correct ? "border-primary/35 bg-primary/10 text-primary-glow" : "border-border bg-card/55 text-muted-foreground"}`}>
+        <div
+          className={`mt-4 rounded-xl border p-3 text-sm leading-relaxed ${correct ? "border-primary/35 bg-primary/10 text-primary-glow" : "border-border bg-card/55 text-muted-foreground"}`}
+        >
           {correct ? "Richtig. " : "Die richtige Lösung ist markiert. "}
           {module.quiz.explanation}
         </div>
@@ -789,13 +1011,16 @@ function ProjectCard({ project }: { project: ProjectIdea }) {
       <div className="flex items-start justify-between gap-4">
         <div>
           <h3 className="font-semibold">{project.title}</h3>
-          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{project.description}</p>
+          <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+            {project.description}
+          </p>
         </div>
         <div className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-primary/10 text-primary-glow">
           <Layers3 className="h-5 w-5" />
         </div>
       </div>
       <div className="mt-4 flex flex-wrap gap-2">
+        <SmallPill>{project.moduleTitle}</SmallPill>
         <SmallPill>{project.difficulty}</SmallPill>
         <SmallPill>{project.duration}</SmallPill>
       </div>
@@ -803,20 +1028,41 @@ function ProjectCard({ project }: { project: ProjectIdea }) {
         <MiniList title="Lernziele" items={project.goals} />
         <MiniList title="Voraussetzungen" items={project.requirements} />
       </div>
+      <Button asChild className="mt-4 w-full bg-gradient-primary shadow-glow">
+        <Link to="/upload-project" search={{ module: project.moduleId, challenge: project.title }}>
+          Projekt starten
+          <Rocket className="ml-2 h-4 w-4" />
+        </Link>
+      </Button>
     </article>
   );
 }
 
-function CommunityPanel({ icon, title, items, cta = false }: { icon: ReactNode; title: string; items: string[]; cta?: boolean }) {
+function CommunityPanel({
+  icon,
+  title,
+  items,
+  cta = false,
+}: {
+  icon: ReactNode;
+  title: string;
+  items: string[];
+  cta?: boolean;
+}) {
   return (
     <div className="rounded-2xl border border-border bg-card/75 p-5 shadow-card-elegant backdrop-blur">
       <div className="flex items-center gap-3">
-        <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary-glow">{icon}</div>
+        <div className="grid h-10 w-10 place-items-center rounded-xl bg-primary/10 text-primary-glow">
+          {icon}
+        </div>
         <h2 className="font-semibold">{title}</h2>
       </div>
       <div className="mt-4 space-y-3">
         {items.map((item) => (
-          <div key={item} className="rounded-xl border border-border bg-background/45 p-3 text-sm leading-relaxed text-muted-foreground">
+          <div
+            key={item}
+            className="rounded-xl border border-border bg-background/45 p-3 text-sm leading-relaxed text-muted-foreground"
+          >
             {item}
           </div>
         ))}
@@ -839,11 +1085,21 @@ function Metric({ value, label }: { value: string; label: string }) {
   );
 }
 
-function LearningBadge({ active, icon, label }: { active: boolean; icon: ReactNode; label: string }) {
+function LearningBadge({
+  active,
+  icon,
+  label,
+}: {
+  active: boolean;
+  icon: ReactNode;
+  label: string;
+}) {
   return (
     <span
       className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs ${
-        active ? "border-primary/35 bg-primary/10 text-primary-glow" : "border-border bg-background/35 text-muted-foreground"
+        active
+          ? "border-primary/35 bg-primary/10 text-primary-glow"
+          : "border-border bg-background/35 text-muted-foreground"
       }`}
     >
       {icon}
@@ -853,13 +1109,31 @@ function LearningBadge({ active, icon, label }: { active: boolean; icon: ReactNo
 }
 
 function StatusPill({ completed, answered }: { completed: boolean; answered: boolean }) {
-  if (completed) return <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] text-primary-glow">Abgeschlossen</span>;
-  if (answered) return <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">Quiz gestartet</span>;
-  return <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">Offen</span>;
+  if (completed)
+    return (
+      <span className="rounded-full bg-primary/15 px-2 py-0.5 text-[11px] text-primary-glow">
+        Abgeschlossen
+      </span>
+    );
+  if (answered)
+    return (
+      <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+        Quiz gestartet
+      </span>
+    );
+  return (
+    <span className="rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
+      Offen
+    </span>
+  );
 }
 
 function SmallPill({ children }: { children: ReactNode }) {
-  return <span className="rounded-full border border-border bg-background/55 px-2.5 py-1 text-xs text-muted-foreground">{children}</span>;
+  return (
+    <span className="rounded-full border border-border bg-background/55 px-2.5 py-1 text-xs text-muted-foreground">
+      {children}
+    </span>
+  );
 }
 
 function MiniList({ title, items }: { title: string; items: string[] }) {

@@ -360,6 +360,24 @@ export type Database = {
         }
         Relationships: []
       }
+      profile_learning_achievements: {
+        Row: {
+          completed_at: string
+          module_id: string
+          user_id: string
+        }
+        Insert: {
+          completed_at: string
+          module_id: string
+          user_id: string
+        }
+        Update: {
+          completed_at?: string
+          module_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -412,6 +430,7 @@ export type Database = {
           github_url: string | null
           id: string
           image_url: string | null
+          learning_module_id: string | null
           lessons_learned: string | null
           likes_count: number
           problem_solved: string | null
@@ -431,6 +450,7 @@ export type Database = {
           github_url?: string | null
           id?: string
           image_url?: string | null
+          learning_module_id?: string | null
           lessons_learned?: string | null
           likes_count?: number
           problem_solved?: string | null
@@ -450,6 +470,7 @@ export type Database = {
           github_url?: string | null
           id?: string
           image_url?: string | null
+          learning_module_id?: string | null
           lessons_learned?: string | null
           likes_count?: number
           problem_solved?: string | null

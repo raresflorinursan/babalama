@@ -18,7 +18,7 @@ Status: In Arbeit
 - [x] Auth-Profil-Sicherung im Code einbauen
 - [x] Supabase-Projekt final vereinheitlichen
 - [ ] Vercel Environment Variables final pruefen
-- [ ] Build und Deployment nach jeder Kern-Aenderung pruefen
+- [x] Build und Deployment nach jeder Kern-Aenderung pruefen
 
 ## Phase 2: Echtdaten statt Mock-Daten
 
@@ -39,14 +39,14 @@ Status: In Arbeit
 
 ## Phase 3: Solvix-Loop
 
-Status: Offen
+Status: Abgeschlossen
 
-- [ ] Jede Lektion bekommt eine passende Projektaufgabe
-- [ ] Projektideen sind direkt mit Lernmodulen verbunden
-- [ ] Projekt-Upload speichert Lernziel, Tech-Stack, Schwierigkeit und Erkenntnisse
-- [ ] Profil zeigt abgeschlossene Module
-- [ ] Profil zeigt veroeffentlichte Projekte
-- [ ] Profil zeigt Skills, Badges und Community-Aktivitaet
+- [x] Jede Lektion bekommt eine passende Projektaufgabe
+- [x] Projektideen sind direkt mit Lernmodulen verbunden
+- [x] Projekt-Upload speichert Lernmodul, Lernziel, Tech-Stack, Schwierigkeit und Erkenntnisse
+- [x] Profil zeigt abgeschlossene Module
+- [x] Profil zeigt veroeffentlichte Projekte
+- [x] Profil zeigt Skills, Badges und Community-Aktivitaet
 
 ## Phase 4: Admin und Safety
 
@@ -69,6 +69,8 @@ Status: In Arbeit
 - [x] Admin-Rechte live fuer den echten CEO-Account verifizieren
 - [x] RLS-Regeln mit temporaeren Testkonten transaktional pruefen
 - [x] Oeffentliche Storage-Auflistung fuer Avatare und Projektbilder verhindern
+- [x] Doppelte Legacy-RLS-Policies entfernen
+- [x] RLS-Policies fuer skalierbare Auth-Auswertung optimieren
 - [ ] Supabase-Schutz vor geleakten Passwoertern im Auth-Dashboard aktivieren
 
 ## Phase 5: Public Beta

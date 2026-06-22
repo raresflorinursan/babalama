@@ -1,8 +1,12 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
+  Award,
   Bell,
   BellOff,
+  BookOpen,
+  Code2,
+  Flame,
   Github,
   Globe,
   MessageCircle,
@@ -17,6 +21,15 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { safeUrl } from "@/lib/safe-url";
 import { toast } from "sonner";
+
+const learningModuleLabels: Record<string, string> = {
+  foundations: "Grundlagen",
+  python: "Python Grundlagen",
+  apis: "APIs verstehen",
+  "ai-practice": "KI praktisch einsetzen",
+  automation: "Automatisierungen bauen",
+  saas: "Eigene SaaS entwickeln",
+};
 
 export const Route = createFileRoute("/profile/$id")({
   head: () => ({
@@ -43,11 +56,37 @@ function ProfilePage() {
       const { data } = await supabase
         .from("projects")
         .select(
-          "id, title, slug, short_description, category, difficulty, technologies, image_url, likes_count",
+          "id, title, slug, short_description, category, difficulty, technologies, image_url, likes_count, learning_module_id",
         )
         .eq("user_id", id)
         .order("created_at", { ascending: false });
       return data ?? [];
+    },
+  });
+
+  const { data: achievements } = useQuery({
+    queryKey: ["profile-learning-achievements", id],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("profile_learning_achievements")
+        .select("module_id, completed_at")
+        .eq("user_id", id)
+        .order("completed_at", { ascending: true });
+      if (error) throw error;
+      return data ?? [];
+    },
+  });
+
+  const { data: communityPostCount = 0 } = useQuery({
+    queryKey: ["profile-community-post-count", id],
+    queryFn: async () => {
+      const { count, error } = await supabase
+        .from("community_posts")
+        .select("id", { count: "exact", head: true })
+        .eq("user_id", id)
+        .eq("is_removed", false);
+      if (error) throw error;
+      return count ?? 0;
     },
   });
 
@@ -90,6 +129,8 @@ function ProfilePage() {
   const isOwnProfile = user?.id === id;
   const isFollowing = Boolean(followRelationship);
   const notificationsEnabled = followRelationship?.notifications_enabled ?? false;
+  const completedModules = achievements?.length ?? 0;
+  const projectCount = projects?.length ?? 0;
 
   const toggleFollow = async () => {
     if (!user) {
@@ -274,6 +315,75 @@ function ProfilePage() {
         </div>
       </section>
 
+      <section className="mx-auto max-w-7xl px-4 pt-10 sm:px-6">
+        <div className="grid gap-3 sm:grid-cols-3">
+          <ProfileMetric
+            icon={<BookOpen className="h-4 w-4" />}
+            value={completedModules}
+            label="Module abgeschlossen"
+          />
+          <ProfileMetric
+            icon={<Code2 className="h-4 w-4" />}
+            value={projectCount}
+            label="Projekte veröffentlicht"
+          />
+          <ProfileMetric
+            icon={<MessageCircle className="h-4 w-4" />}
+            value={communityPostCount}
+            label="Community-Beiträge"
+          />
+        </div>
+
+        <div className="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1fr)_320px]">
+          <div>
+            <div className="flex items-center gap-2">
+              <BookOpen className="h-4 w-4 text-primary-glow" />
+              <h2 className="font-medium">Lernfortschritt</h2>
+            </div>
+            {achievements && achievements.length > 0 ? (
+              <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {achievements.map((achievement) => (
+                  <div
+                    key={achievement.module_id}
+                    className="rounded-xl border border-border bg-card/70 p-4"
+                  >
+                    <div className="flex items-center justify-between gap-3">
+                      <span className="text-sm font-medium">
+                        {learningModuleLabels[achievement.module_id] ?? achievement.module_id}
+                      </span>
+                      <Award className="h-4 w-4 text-primary-glow" />
+                    </div>
+                    <p className="mt-2 text-xs text-muted-foreground">
+                      Abgeschlossen am{" "}
+                      {new Date(achievement.completed_at).toLocaleDateString("de-DE")}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <p className="mt-3 rounded-xl border border-dashed border-border p-5 text-sm text-muted-foreground">
+                Noch keine öffentlich sichtbaren Lernmodule abgeschlossen.
+              </p>
+            )}
+          </div>
+
+          <div>
+            <div className="flex items-center gap-2">
+              <Award className="h-4 w-4 text-primary-glow" />
+              <h2 className="font-medium">Builder-Badges</h2>
+            </div>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <ProfileBadge active={completedModules >= 1} label="Explorer" />
+              <ProfileBadge active={completedModules >= 3} label="Momentum" />
+              <ProfileBadge active={completedModules === 6} label="SaaS Ready" />
+              <ProfileBadge active={projectCount >= 1} label="First Build" />
+              <ProfileBadge active={projectCount >= 3} label="Product Builder" />
+              <ProfileBadge active={communityPostCount >= 5} label="Community Voice" />
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-7xl px-4 py-12 sm:px-6">
         <h2 className="mb-5 text-lg font-medium">Projekte</h2>
         {(projects ?? []).length === 0 ? (
@@ -292,5 +402,38 @@ function ProfilePage() {
         )}
       </section>
     </SiteShell>
+  );
+}
+
+function ProfileMetric({
+  icon,
+  value,
+  label,
+}: {
+  icon: React.ReactNode;
+  value: number;
+  label: string;
+}) {
+  return (
+    <div className="rounded-xl border border-border bg-card/70 p-4">
+      <div className="flex items-center gap-2 text-primary-glow">{icon}</div>
+      <div className="mt-3 text-2xl font-semibold">{value}</div>
+      <div className="mt-1 text-xs text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function ProfileBadge({ active, label }: { active: boolean; label: string }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs ${
+        active
+          ? "border-primary/35 bg-primary/10 text-primary-glow"
+          : "border-border bg-background/40 text-muted-foreground opacity-60"
+      }`}
+    >
+      <Flame className="h-3.5 w-3.5" />
+      {label}
+    </span>
   );
 }

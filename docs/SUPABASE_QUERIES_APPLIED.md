@@ -1209,3 +1209,44 @@ Teilnehmer, keine Sichtbarkeit fuer unbeteiligte Nutzer und Blockierungswirkung.
 
 Der vollstaendige SQL-Stand liegt in:
 `supabase/migrations/20260622171810_meetings_persistence.sql`
+
+## 12. Learning, Project and Profile Loop (2026-06-23)
+
+Live angewendet als Migration `20260622222148_learning_project_profile_loop`.
+
+- alle sechs Lernmodule besitzen eine direkt verknuepfte Projektaufgabe
+- Projekt-Uploads speichern das zugehoerige Lernmodul
+- Projektansichten kennzeichnen Lernprojekte und verlinken zum Lernpfad
+- Profile zeigen abgeschlossene Module, Builder-Badges und Community-Aktivitaet
+- Quizantworten werden serverseitig ausgewertet; der Browser kann Abschluesse nicht faelschen
+- oeffentliche Lern-Achievements werden nur durch geschuetzte Trigger geschrieben
+- Nutzer koennen Lern-Achievements lesen, aber nicht selbst anlegen oder manipulieren
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260622222148_learning_project_profile_loop.sql`
+
+## 13. Legacy RLS Policy Optimization (2026-06-23)
+
+Live angewendet als Migration `20260622224759_optimize_legacy_rls_policies`.
+
+- doppelte Legacy-Policies fuer Profile, Projekte, Fragen, Antworten, Kommentare, Likes und gespeicherte Projekte entfernt
+- Verhalten mit je einer eindeutigen Policy pro Rolle und Aktion erhalten
+- `auth.uid()` in RLS-Policies als stabiler Init-Plan ausgefuehrt
+- doppelte Avatar-Storage-Policies konsolidiert
+- Projektbild- und Community-Delete-Policies ebenfalls optimiert
+- Supabase-Performance-Advisor meldet danach keine RLS-Initplan- oder Mehrfach-Policy-Warnungen mehr
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260622224759_optimize_legacy_rls_policies.sql`
+
+## 14. Learning Loop Verification (2026-06-23)
+
+Die Regeln wurden in einer vollstaendig zurueckgerollten Transaktion mit einem
+realen Auth-Kontext geprueft:
+
+- eine falsche Quizantwort erzeugt weder Abschluss noch Achievement
+- eine richtige Quizantwort setzt den Abschluss serverseitig
+- das Achievement wird automatisch synchronisiert und ist oeffentlich lesbar
+- `anon` und `authenticated` besitzen keine Schreibrechte auf Achievements
+- der Lernmodul-Check fuer Projekte ist in der Datenbank aktiv
+- Linter fuer die geaenderten Dateien und Vercel-Produktions-Build sind erfolgreich

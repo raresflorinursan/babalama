@@ -31,6 +31,18 @@ Dann diese Dateien in genau dieser Reihenfolge ausfuehren, falls sie in der Live
 6. `supabase/migrations/20260617103000_learning_progress.sql`
 7. `supabase/migrations/20260617113000_supabase_release_hardening.sql`
 
+Neuere Migrationen werden ueber den verbundenen Supabase-Connector angewendet und
+muessen in der Reihenfolge ihrer Versionsnummer folgen. Der aktuell bestaetigte
+Live-Stand endet bei:
+
+```text
+20260622224759_optimize_legacy_rls_policies
+```
+
+Den aktuellen Stand immer zuerst mit `supabase_migrations.schema_migrations`
+beziehungsweise der Migrationsliste im Dashboard vergleichen. Bereits vorhandene
+Migrationen nicht erneut manuell ausfuehren.
+
 ## Wichtig vor dem Ausfuehren
 
 In `20260616120000_human_only_security_layer.sql` steht aktuell dieser Owner:
