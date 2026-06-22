@@ -1147,3 +1147,44 @@ Live angewendet als Migration `20260622151253_community_persistence_and_editoria
 
 Der vollständige, reproduzierbare SQL-Stand liegt in:
 `supabase/migrations/20260622151253_community_persistence_and_editorial_seed.sql`
+
+## 8. Community Moderation and Relationships (2026-06-22)
+
+Live angewendet als Migration `20260622160701_community_moderation_and_relationships`.
+
+- `user_follows` speichert Folgen und Glocken-Einstellungen dauerhaft
+- `user_blocks` speichert Blockierungen und entfernt gegenseitige Follow-Beziehungen
+- `content_reports` speichert Meldungen mit Grund, Snapshot und Bearbeitungsstatus
+- `user_restrictions` speichert zeitliche Suspendierungen und dauerhafte Sperren
+- `profiles.platform_role` zeigt Rollen an, kann aber nicht vom Nutzer selbst geaendert werden
+- Admin-Rechte werden weiterhin ausschliesslich aus `app_private.platform_admins` abgeleitet
+- gesperrte Konten koennen keine Posts, Kommentare, Likes, Follows oder Meldungen erstellen
+- blockierte Nutzer werden serverseitig aus Posts und Kommentaren gefiltert
+- zehn Meldungen pro Stunde und Nutzer verhindern Missbrauch der Meldefunktion
+- Admins koennen Inhalte per `is_removed` ausblenden, ohne Nachweise physisch zu loeschen
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260622160701_community_moderation_and_relationships.sql`
+
+## 9. Storage and Moderation Index Hardening (2026-06-22)
+
+Live angewendet als Migration `20260622163338_harden_public_storage_and_moderation_indexes`.
+
+- breite SELECT-Policies der oeffentlichen Buckets `avatars` und `project-images` entfernt
+- direkte oeffentliche Objekt-URLs bleiben nutzbar, Bucket-Inhalte sind nicht mehr auflistbar
+- fehlende Indizes fuer Moderations-Audit-Fremdschluessel ergaenzt
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260622163338_harden_public_storage_and_moderation_indexes.sql`
+
+## 10. Verification (2026-06-22)
+
+Die neuen Regeln wurden in einer Transaktion mit zwei temporaeren Auth-Nutzern getestet und
+vollstaendig zurueckgerollt. Erfolgreich geprueft wurden:
+
+- nur der angemeldete Nutzer kann eigene Follow-Beziehungen anlegen
+- Blockieren entfernt bestehende Follow-Beziehungen und verhindert neue
+- normale Nutzer koennen Meldungen nicht moderieren
+- der echte Owner kann Meldungen sehen und bearbeiten
+- suspendierte Nutzer koennen nicht mehr interagieren
+- der Produktions-Build fuer Vercel wird erfolgreich erzeugt

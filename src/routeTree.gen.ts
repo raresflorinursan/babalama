@@ -25,6 +25,7 @@ import { Route as AuthenticatedUploadProjectRouteImport } from './routes/_authen
 import { Route as AuthenticatedEditProfileRouteImport } from './routes/_authenticated/edit-profile'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAskQuestionRouteImport } from './routes/_authenticated/ask-question'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 
 const MeetingsRoute = MeetingsRouteImport.update({
   id: '/meetings',
@@ -108,6 +109,11 @@ const AuthenticatedAskQuestionRoute =
     path: '/ask-question',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -116,6 +122,7 @@ export interface FileRoutesByFullPath {
   '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
   '/meetings': typeof MeetingsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/ask-question': typeof AuthenticatedAskQuestionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/edit-profile': typeof AuthenticatedEditProfileRoute
@@ -133,6 +140,7 @@ export interface FileRoutesByTo {
   '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
   '/meetings': typeof MeetingsRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/ask-question': typeof AuthenticatedAskQuestionRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/edit-profile': typeof AuthenticatedEditProfileRoute
@@ -152,6 +160,7 @@ export interface FileRoutesById {
   '/community': typeof CommunityRoute
   '/learn': typeof LearnRoute
   '/meetings': typeof MeetingsRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/ask-question': typeof AuthenticatedAskQuestionRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/edit-profile': typeof AuthenticatedEditProfileRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/community'
     | '/learn'
     | '/meetings'
+    | '/admin'
     | '/ask-question'
     | '/dashboard'
     | '/edit-profile'
@@ -188,6 +198,7 @@ export interface FileRouteTypes {
     | '/community'
     | '/learn'
     | '/meetings'
+    | '/admin'
     | '/ask-question'
     | '/dashboard'
     | '/edit-profile'
@@ -206,6 +217,7 @@ export interface FileRouteTypes {
     | '/community'
     | '/learn'
     | '/meetings'
+    | '/_authenticated/admin'
     | '/_authenticated/ask-question'
     | '/_authenticated/dashboard'
     | '/_authenticated/edit-profile'
@@ -345,10 +357,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAskQuestionRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedAskQuestionRoute: typeof AuthenticatedAskQuestionRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEditProfileRoute: typeof AuthenticatedEditProfileRoute
@@ -356,6 +376,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedAskQuestionRoute: AuthenticatedAskQuestionRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEditProfileRoute: AuthenticatedEditProfileRoute,

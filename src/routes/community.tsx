@@ -17,6 +17,7 @@ import {
   Search,
   Send,
   Share2,
+  ShieldAlert,
   Sparkles,
   UserCheck,
   UserPlus,
@@ -64,6 +65,14 @@ type CommunityComment = {
   body: string;
   time: string;
   author: Person;
+};
+
+type ReportTarget = {
+  type: "post" | "comment" | "user";
+  id: string;
+  ownerId: string;
+  label: string;
+  excerpt: string;
 };
 
 const categories = ["Allgemein", "Gefolgt", "Coding", "KI", "SaaS", "Projekte", "Fragen"];
@@ -252,8 +261,8 @@ function CommunityPage() {
   const [selectedCategories, setSelectedCategories] = useState<string[]>(["Allgemein"]);
   const [searchQuery, setSearchQuery] = useState("");
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
-  const [ignoredHandles, setIgnoredHandles] = useState<string[]>([]);
   const [shareDialogPostId, setShareDialogPostId] = useState<string | null>(null);
+  const [reportTarget, setReportTarget] = useState<ReportTarget | null>(null);
   const [commentsByPost, setCommentsByPost] = useState<Record<string, CommunityComment[]>>({});
   const [commentsLoading, setCommentsLoading] = useState<string | null>(null);
   const [feedLoading, setFeedLoading] = useState(true);
@@ -285,13 +294,11 @@ function CommunityPage() {
       return;
     }
 
-    const authorIds = Array.from(new Set((postRows ?? []).map((post) => post.user_id)));
-    const { data: profileRows, error: profileError } = authorIds.length
-      ? await supabase
-          .from("profiles")
-          .select("id, username, full_name, avatar_url, bio")
-          .in("id", authorIds)
-      : { data: [], error: null };
+    const { data: profileRows, error: profileError } = await supabase
+      .from("profiles")
+      .select("id, username, full_name, avatar_url, bio")
+      .order("created_at", { ascending: false })
+      .limit(50);
 
     if (profileError) {
       setFeedError(profileError.message);
@@ -300,20 +307,34 @@ function CommunityPage() {
     }
 
     let likedIds = new Set<string>();
+    const followSettings = new Map<string, boolean>();
+    let blockedIds = new Set<string>();
     if (user) {
-      const { data: likedRows, error: likedError } = await supabase
-        .from("community_post_likes")
-        .select("post_id")
-        .eq("user_id", user.id);
+      const [likedResult, followResult, blockResult] = await Promise.all([
+        supabase.from("community_post_likes").select("post_id").eq("user_id", user.id),
+        supabase
+          .from("user_follows")
+          .select("following_id, notifications_enabled")
+          .eq("follower_id", user.id),
+        supabase.from("user_blocks").select("blocked_id").eq("blocker_id", user.id),
+      ]);
+      const { data: likedRows, error: likedError } = likedResult;
       if (!likedError) likedIds = new Set((likedRows ?? []).map((like) => like.post_id));
+      for (const follow of followResult.data ?? []) {
+        followSettings.set(follow.following_id, follow.notifications_enabled);
+      }
+      blockedIds = new Set((blockResult.data ?? []).map((block) => block.blocked_id));
     }
 
-    setPeople((current) => {
-      const previousById = new Map(current.map((person) => [person.id, person]));
-      return (profileRows ?? []).map((profile) =>
-        personFromProfile(profile, previousById.get(profile.id)),
-      );
-    });
+    setPeople(
+      (profileRows ?? [])
+        .filter((profile) => !blockedIds.has(profile.id))
+        .map((profile) => ({
+          ...personFromProfile(profile),
+          followed: followSettings.has(profile.id),
+          notifications: followSettings.get(profile.id) ?? false,
+        })),
+    );
 
     setPosts(
       (postRows ?? []).map((post) => ({
@@ -414,28 +435,121 @@ function CommunityPage() {
     setPublishing(false);
   };
 
-  const toggleFollow = (id: string) => {
+  const toggleFollow = async (id: string) => {
+    if (!user) {
+      toast.error("Melde dich an, um Nutzern zu folgen.");
+      return;
+    }
+    if (id === user.id) return;
+
+    const person = peopleById.get(id);
+    if (!person) return;
+
+    const result = person.followed
+      ? await supabase
+          .from("user_follows")
+          .delete()
+          .eq("follower_id", user.id)
+          .eq("following_id", id)
+      : await supabase.from("user_follows").insert({
+          follower_id: user.id,
+          following_id: id,
+          notifications_enabled: false,
+        });
+
+    if (result.error) {
+      toast.error(result.error.message);
+      return;
+    }
+
     setPeople((current) =>
-      current.map((person) =>
-        person.id === id
-          ? {
-              ...person,
-              followed: !person.followed,
-              notifications: person.followed ? false : person.notifications,
-            }
-          : person,
+      current.map((item) =>
+        item.id === id ? { ...item, followed: !person.followed, notifications: false } : item,
       ),
     );
   };
 
-  const toggleNotifications = (id: string) => {
+  const toggleNotifications = async (id: string) => {
+    if (!user) {
+      toast.error("Melde dich an, um Benachrichtigungen zu aktivieren.");
+      return;
+    }
+    if (id === user.id) return;
+
+    const person = peopleById.get(id);
+    if (!person) return;
+    const nextValue = !person.notifications;
+    const { error } = await supabase.from("user_follows").upsert(
+      {
+        follower_id: user.id,
+        following_id: id,
+        notifications_enabled: nextValue,
+      },
+      { onConflict: "follower_id,following_id" },
+    );
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
     setPeople((current) =>
-      current.map((person) =>
-        person.id === id
-          ? { ...person, notifications: !person.notifications, followed: true }
-          : person,
+      current.map((item) =>
+        item.id === id ? { ...item, followed: true, notifications: nextValue } : item,
       ),
     );
+  };
+
+  const blockUser = async (person: Person) => {
+    if (!user) {
+      toast.error("Melde dich an, um Nutzer zu blockieren.");
+      return;
+    }
+    if (person.id === user.id) return;
+
+    const { error } = await supabase
+      .from("user_blocks")
+      .upsert(
+        { blocker_id: user.id, blocked_id: person.id },
+        { onConflict: "blocker_id,blocked_id", ignoreDuplicates: true },
+      );
+
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
+
+    setOpenMenuId(null);
+    toast.success(`@${person.handle} wurde blockiert.`);
+    await loadCommunity();
+  };
+
+  const submitReport = async (reason: string, details: string) => {
+    if (!user || !reportTarget) {
+      toast.error("Melde dich an, um Inhalte zu melden.");
+      return false;
+    }
+
+    const { error } = await supabase.from("content_reports").insert({
+      reporter_id: user.id,
+      target_type: reportTarget.type,
+      target_id: reportTarget.id,
+      target_owner_id: reportTarget.ownerId,
+      target_excerpt: reportTarget.excerpt.slice(0, 500),
+      reason,
+      details: details.trim() || null,
+    });
+
+    if (error) {
+      toast.error(
+        error.code === "23505" ? "Du hast diesen Inhalt bereits gemeldet." : error.message,
+      );
+      return false;
+    }
+
+    toast.success("Meldung wurde sicher übermittelt.");
+    setReportTarget(null);
+    return true;
   };
 
   const toggleLike = async (postId: string) => {
@@ -514,7 +628,7 @@ function CommunityPage() {
 
     return posts.filter((post) => {
       const author = peopleById.get(post.authorId);
-      if (!author || ignoredHandles.includes(author.handle)) return false;
+      if (!author) return false;
 
       const showAll = selectedCategories.length === 0 || selectedCategories.includes("Allgemein");
       const matchesCategory =
@@ -533,7 +647,7 @@ function CommunityPage() {
 
       return matchesCategory && matchesSearch;
     });
-  }, [ignoredHandles, peopleById, posts, searchQuery, selectedCategories]);
+  }, [peopleById, posts, searchQuery, selectedCategories]);
 
   const matchingPeople = useMemo(() => {
     const query = searchQuery.trim().replace(/^#/, "").toLowerCase();
@@ -642,16 +756,34 @@ function CommunityPage() {
                     comments={commentsByPost[post.id] ?? []}
                     commentsLoading={commentsLoading === post.id}
                     canReply={Boolean(user)}
+                    currentUserId={user?.id}
+                    isOwnAuthor={user?.id === author.id}
                     isMenuOpen={openMenuId === post.id}
                     onMenuToggle={() =>
                       setOpenMenuId((current) => (current === post.id ? null : post.id))
                     }
-                    onIgnore={() => {
-                      setIgnoredHandles((current) => [...current, author.handle]);
+                    onBlock={() => void blockUser(author)}
+                    onReportPost={() => {
                       setOpenMenuId(null);
+                      setReportTarget({
+                        type: "post",
+                        id: post.id,
+                        ownerId: author.id,
+                        label: `Beitrag von @${author.handle}`,
+                        excerpt: post.body,
+                      });
                     }}
-                    onFollow={() => toggleFollow(author.id)}
-                    onBell={() => toggleNotifications(author.id)}
+                    onReportComment={(comment) =>
+                      setReportTarget({
+                        type: "comment",
+                        id: comment.id,
+                        ownerId: comment.author.id,
+                        label: `Antwort von @${comment.author.handle}`,
+                        excerpt: comment.body,
+                      })
+                    }
+                    onFollow={() => void toggleFollow(author.id)}
+                    onBell={() => void toggleNotifications(author.id)}
                     onLike={() => void toggleLike(post.id)}
                     onComment={() => void toggleComments(post.id)}
                     onReply={(body) => submitComment(post.id, body)}
@@ -678,8 +810,9 @@ function CommunityPage() {
                   <PersonRow
                     key={person.id}
                     person={person}
-                    onFollow={() => toggleFollow(person.id)}
-                    onBell={() => toggleNotifications(person.id)}
+                    isOwn={user?.id === person.id}
+                    onFollow={() => void toggleFollow(person.id)}
+                    onBell={() => void toggleNotifications(person.id)}
                   />
                 ))}
               </div>
@@ -742,6 +875,13 @@ function CommunityPage() {
           onShare={() => setShareDialogPostId(null)}
         />
       )}
+      {reportTarget && (
+        <ReportDialog
+          target={reportTarget}
+          onClose={() => setReportTarget(null)}
+          onSubmit={submitReport}
+        />
+      )}
     </SiteShell>
   );
 }
@@ -751,9 +891,13 @@ function PostCard({
   comments,
   commentsLoading,
   canReply,
+  currentUserId,
+  isOwnAuthor,
   isMenuOpen,
   onMenuToggle,
-  onIgnore,
+  onBlock,
+  onReportPost,
+  onReportComment,
   onFollow,
   onBell,
   onLike,
@@ -767,9 +911,13 @@ function PostCard({
   comments: CommunityComment[];
   commentsLoading: boolean;
   canReply: boolean;
+  currentUserId?: string;
+  isOwnAuthor: boolean;
   isMenuOpen: boolean;
   onMenuToggle: () => void;
-  onIgnore: () => void;
+  onBlock: () => void;
+  onReportPost: () => void;
+  onReportComment: (comment: CommunityComment) => void;
   onFollow: () => void;
   onBell: () => void;
   onLike: () => void;
@@ -820,7 +968,7 @@ function PostCard({
                     {author.role}
                   </span>
                 )}
-                {!author.followed && (
+                {!isOwnAuthor && !author.followed && (
                   <button
                     onClick={onFollow}
                     className="inline-flex items-center gap-1 rounded-full border border-primary/30 px-2 py-0.5 text-[11px] text-primary-glow hover:bg-primary/10"
@@ -829,22 +977,24 @@ function PostCard({
                     Folgen
                   </button>
                 )}
-                <button
-                  onClick={onBell}
-                  className={cn(
-                    "inline-flex h-6 w-6 items-center justify-center rounded-full border",
-                    author.notifications
-                      ? "border-primary/40 bg-primary/15 text-primary-glow"
-                      : "border-border text-muted-foreground hover:text-foreground",
-                  )}
-                  aria-label={author.notifications ? "Glocke deaktivieren" : "Glocke aktivieren"}
-                >
-                  {author.notifications ? (
-                    <Bell className="h-3.5 w-3.5" />
-                  ) : (
-                    <BellOff className="h-3.5 w-3.5" />
-                  )}
-                </button>
+                {!isOwnAuthor && (
+                  <button
+                    onClick={onBell}
+                    className={cn(
+                      "inline-flex h-6 w-6 items-center justify-center rounded-full border",
+                      author.notifications
+                        ? "border-primary/40 bg-primary/15 text-primary-glow"
+                        : "border-border text-muted-foreground hover:text-foreground",
+                    )}
+                    aria-label={author.notifications ? "Glocke deaktivieren" : "Glocke aktivieren"}
+                  >
+                    {author.notifications ? (
+                      <Bell className="h-3.5 w-3.5" />
+                    ) : (
+                      <BellOff className="h-3.5 w-3.5" />
+                    )}
+                  </button>
+                )}
                 <span className="inline-flex items-center gap-1 rounded-full border border-border px-2 py-0.5 text-[11px] text-muted-foreground">
                   <CategoryIcon category={post.category} className="h-3 w-3" />
                   {post.category}
@@ -872,17 +1022,24 @@ function PostCard({
                     <Users className="h-4 w-4" />
                     Profil ansehen
                   </Link>
-                  <button
-                    onClick={onIgnore}
-                    className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-accent"
-                  >
-                    <EyeOff className="h-4 w-4" />
-                    Nutzer ignorieren
-                  </button>
-                  <button className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-muted-foreground hover:bg-accent hover:text-foreground">
-                    <Flag className="h-4 w-4" />
-                    Melden
-                  </button>
+                  {!isOwnAuthor && (
+                    <>
+                      <button
+                        onClick={onBlock}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left hover:bg-accent"
+                      >
+                        <EyeOff className="h-4 w-4" />
+                        Nutzer blockieren
+                      </button>
+                      <button
+                        onClick={onReportPost}
+                        className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-muted-foreground hover:bg-accent hover:text-foreground"
+                      >
+                        <Flag className="h-4 w-4" />
+                        Beitrag melden
+                      </button>
+                    </>
+                  )}
                 </div>
               )}
             </div>
@@ -942,10 +1099,21 @@ function PostCard({
                     >
                       {comment.author.avatar}
                     </Link>
-                    <div className="min-w-0 rounded-xl bg-background/55 px-3 py-2">
+                    <div className="min-w-0 flex-1 rounded-xl bg-background/55 px-3 py-2">
                       <div className="flex flex-wrap items-center gap-2 text-xs">
                         <span className="font-medium">{comment.author.name}</span>
                         <span className="text-muted-foreground">{comment.time}</span>
+                        {currentUserId && currentUserId !== comment.author.id && (
+                          <button
+                            type="button"
+                            onClick={() => onReportComment(comment)}
+                            className="ml-auto rounded p-1 text-muted-foreground hover:bg-accent hover:text-foreground"
+                            aria-label="Antwort melden"
+                            title="Antwort melden"
+                          >
+                            <Flag className="h-3.5 w-3.5" />
+                          </button>
+                        )}
                       </div>
                       <p className="mt-1 text-sm leading-relaxed">{comment.body}</p>
                     </div>
@@ -1143,6 +1311,116 @@ function ShareDialog({
   );
 }
 
+const reportReasons = [
+  { value: "spam", label: "Spam oder Werbung" },
+  { value: "harassment", label: "Belästigung oder Mobbing" },
+  { value: "hate", label: "Hassrede" },
+  { value: "misinformation", label: "Irreführende Information" },
+  { value: "impersonation", label: "Identitätsmissbrauch" },
+  { value: "illegal", label: "Rechtswidriger Inhalt" },
+  { value: "other", label: "Anderer Grund" },
+];
+
+function ReportDialog({
+  target,
+  onClose,
+  onSubmit,
+}: {
+  target: ReportTarget;
+  onClose: () => void;
+  onSubmit: (reason: string, details: string) => Promise<boolean>;
+}) {
+  const [reason, setReason] = useState("spam");
+  const [details, setDetails] = useState("");
+  const [submitting, setSubmitting] = useState(false);
+
+  const submit = async () => {
+    if (submitting) return;
+    setSubmitting(true);
+    await onSubmit(reason, details);
+    setSubmitting(false);
+  };
+
+  return (
+    <div className="fixed inset-0 z-50 grid place-items-center bg-black/75 px-4 backdrop-blur-sm">
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="report-title"
+        className="w-full max-w-lg rounded-2xl border border-border bg-card p-5 shadow-glow animate-in fade-in zoom-in-95 duration-200"
+      >
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-destructive/10 text-destructive">
+              <ShieldAlert className="h-5 w-5" />
+            </div>
+            <div>
+              <h2 id="report-title" className="text-xl font-semibold">
+                Inhalt melden
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">{target.label}</p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="rounded-lg p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
+            aria-label="Meldung schließen"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="mt-5 grid gap-2 sm:grid-cols-2">
+          {reportReasons.map((item) => (
+            <button
+              key={item.value}
+              type="button"
+              onClick={() => setReason(item.value)}
+              className={cn(
+                "rounded-xl border px-3 py-2 text-left text-sm transition-colors",
+                reason === item.value
+                  ? "border-primary/50 bg-primary/10 text-foreground"
+                  : "border-border bg-background/45 text-muted-foreground hover:bg-accent",
+              )}
+              aria-pressed={reason === item.value}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <label className="mt-4 block text-sm font-medium">
+          Zusätzliche Hinweise <span className="font-normal text-muted-foreground">(optional)</span>
+          <textarea
+            value={details}
+            onChange={(event) => setDetails(event.target.value.slice(0, 500))}
+            placeholder="Beschreibe kurz, was geprüft werden soll."
+            className="mt-2 min-h-24 w-full resize-none rounded-xl border border-border bg-background/55 px-3 py-2 text-sm font-normal outline-none focus:border-primary/50"
+          />
+        </label>
+
+        <p className="mt-2 text-xs text-muted-foreground">
+          Die Meldung wird gespeichert und ist nur für die Moderation sichtbar.
+        </p>
+        <div className="mt-5 flex justify-end gap-2">
+          <Button type="button" variant="outline" onClick={onClose}>
+            Abbrechen
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            onClick={() => void submit()}
+            disabled={submitting}
+          >
+            {submitting ? "Wird gesendet" : "Meldung senden"}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function BrandIcon({ name }: { name: string }) {
   if (name === "whatsapp") {
     return (
@@ -1236,10 +1514,12 @@ function BrandIcon({ name }: { name: string }) {
 
 function PersonRow({
   person,
+  isOwn,
   onFollow,
   onBell,
 }: {
   person: Person;
+  isOwn: boolean;
   onFollow: () => void;
   onBell: () => void;
 }) {
@@ -1260,26 +1540,28 @@ function PersonRow({
           </div>
         </div>
       </Link>
-      <div className="flex items-center gap-1">
-        <button
-          onClick={onFollow}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label={person.followed ? "Entfolgen" : "Folgen"}
-        >
-          {person.followed ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
-        </button>
-        <button
-          onClick={onBell}
-          className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
-          aria-label={person.notifications ? "Glocke deaktivieren" : "Glocke aktivieren"}
-        >
-          {person.notifications ? (
-            <Bell className="h-4 w-4 text-primary-glow" />
-          ) : (
-            <BellOff className="h-4 w-4" />
-          )}
-        </button>
-      </div>
+      {!isOwn && (
+        <div className="flex items-center gap-1">
+          <button
+            onClick={onFollow}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+            aria-label={person.followed ? "Entfolgen" : "Folgen"}
+          >
+            {person.followed ? <UserCheck className="h-4 w-4" /> : <UserPlus className="h-4 w-4" />}
+          </button>
+          <button
+            onClick={onBell}
+            className="inline-flex h-8 w-8 items-center justify-center rounded-lg border border-border text-muted-foreground hover:bg-accent hover:text-foreground"
+            aria-label={person.notifications ? "Glocke deaktivieren" : "Glocke aktivieren"}
+          >
+            {person.notifications ? (
+              <Bell className="h-4 w-4 text-primary-glow" />
+            ) : (
+              <BellOff className="h-4 w-4" />
+            )}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

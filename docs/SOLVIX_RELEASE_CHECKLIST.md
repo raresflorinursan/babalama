@@ -33,6 +33,7 @@ Status: In Arbeit
 - [x] Community-Posts von Mock-Daten auf Supabase umstellen
 - [x] Community-Likes auf Supabase umstellen
 - [x] Community-Kommentare auf Supabase umstellen
+- [x] Folgen und Glocken-Einstellung dauerhaft in Supabase speichern
 - [ ] Meetings entweder als Beta markieren oder in Supabase speichern
 
 ## Phase 3: Solvix-Loop
@@ -59,10 +60,15 @@ Status: In Arbeit
 - [x] Supabase Release-Hardening-Migration erstellt
 - [x] Härtungs-Migration in Supabase anwenden
 - [x] Storage-Buckets fuer Avatare und Projektbilder absichern
-- [ ] Admin-Moderationsoberflaeche bauen
-- [ ] Melden-Funktion in Supabase speichern
-- [ ] Nutzer blockieren/ignorieren in Supabase speichern
-- [ ] Admin-Rechte live fuer den echten CEO-Account verifizieren
+- [x] Admin-Moderationsoberflaeche bauen
+- [x] Melden-Funktion fuer Posts und Kommentare in Supabase speichern
+- [x] Nutzer blockieren/ignorieren in Supabase speichern
+- [x] Inhalte per Soft-Delete moderieren
+- [x] Nutzer zeitlich suspendieren oder dauerhaft sperren
+- [x] Admin-Rechte live fuer den echten CEO-Account verifizieren
+- [x] RLS-Regeln mit temporaeren Testkonten transaktional pruefen
+- [x] Oeffentliche Storage-Auflistung fuer Avatare und Projektbilder verhindern
+- [ ] Supabase-Schutz vor geleakten Passwoertern im Auth-Dashboard aktivieren
 
 ## Phase 5: Public Beta
 

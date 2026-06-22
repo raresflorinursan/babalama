@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
-import { Menu, X } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Menu, ShieldCheck, X } from "lucide-react";
 import { BrandMark } from "@/components/BrandMark";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/hooks/useAuth";
@@ -18,7 +18,30 @@ const navItems = [
 export function Navbar() {
   const { user, loading } = useAuth();
   const [open, setOpen] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    let active = true;
+    if (!user) {
+      setIsAdmin(false);
+      return () => {
+        active = false;
+      };
+    }
+
+    supabase
+      .from("profiles")
+      .select("platform_role")
+      .eq("id", user.id)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (active) setIsAdmin(["owner", "admin", "moderator"].includes(data?.platform_role ?? ""));
+      });
+    return () => {
+      active = false;
+    };
+  }, [user]);
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
@@ -49,6 +72,14 @@ export function Navbar() {
         <div className="hidden items-center gap-2 md:flex">
           {!loading && user ? (
             <>
+              {isAdmin && (
+                <Button asChild variant="ghost" size="sm">
+                  <Link to="/admin">
+                    <ShieldCheck className="mr-2 h-4 w-4" />
+                    Moderation
+                  </Link>
+                </Button>
+              )}
               <Button asChild variant="ghost" size="sm">
                 <Link to="/dashboard">Dashboard</Link>
               </Button>
@@ -61,7 +92,11 @@ export function Navbar() {
               <Button asChild variant="ghost" size="sm">
                 <Link to="/auth">Login</Link>
               </Button>
-              <Button asChild size="sm" className="bg-gradient-primary shadow-glow hover:opacity-90">
+              <Button
+                asChild
+                size="sm"
+                className="bg-gradient-primary shadow-glow hover:opacity-90"
+              >
                 <Link to="/auth">Registrieren</Link>
               </Button>
             </>
@@ -92,6 +127,15 @@ export function Navbar() {
             ))}
             {!loading && user ? (
               <>
+                {isAdmin && (
+                  <Link
+                    to="/admin"
+                    onClick={() => setOpen(false)}
+                    className="rounded-md px-3 py-2 text-sm text-muted-foreground hover:bg-accent hover:text-foreground"
+                  >
+                    Moderation
+                  </Link>
+                )}
                 <Link
                   to="/dashboard"
                   onClick={() => setOpen(false)}
