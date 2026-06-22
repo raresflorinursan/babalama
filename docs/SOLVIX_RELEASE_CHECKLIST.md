@@ -34,7 +34,8 @@ Status: In Arbeit
 - [x] Community-Likes auf Supabase umstellen
 - [x] Community-Kommentare auf Supabase umstellen
 - [x] Folgen und Glocken-Einstellung dauerhaft in Supabase speichern
-- [ ] Meetings entweder als Beta markieren oder in Supabase speichern
+- [x] Meetings privat und nutzerbezogen in Supabase speichern
+- [x] Meeting-Ersteller, Teilnehmer, Absage und kopierbaren Link absichern
 
 ## Phase 3: Solvix-Loop
 

@@ -1188,3 +1188,24 @@ vollstaendig zurueckgerollt. Erfolgreich geprueft wurden:
 - der echte Owner kann Meldungen sehen und bearbeiten
 - suspendierte Nutzer koennen nicht mehr interagieren
 - der Produktions-Build fuer Vercel wird erfolgreich erzeugt
+
+## 11. Private Meetings (2026-06-22)
+
+Live angewendet als Migration `20260622171810_meetings_persistence`.
+
+- private Zwei-Personen-Meetings mit registrierten Solvix-Nutzern
+- nur Ersteller und Teilnehmer duerfen einen Termin lesen
+- nur der Ersteller darf einen Termin aendern, absagen oder loeschen
+- Startzeit muss in der Zukunft liegen
+- Dauer ist auf 15 bis 180 Minuten begrenzt
+- maximal 20 kommende Meetings pro Ersteller schuetzen vor Spam
+- blockierte oder gesperrte Konten koennen keine neuen Meetings erstellen
+- Meeting-Code fuer kopierbare, nicht fortlaufend erratbare Links
+- explizite Data-API-Rechte und erzwungene Row Level Security
+
+Die RLS-Regeln wurden mit drei temporaeren Nutzern in einer zurueckgerollten
+Transaktion geprueft: Teilnehmer-Leserecht, fehlendes Bearbeitungsrecht fuer
+Teilnehmer, keine Sichtbarkeit fuer unbeteiligte Nutzer und Blockierungswirkung.
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260622171810_meetings_persistence.sql`

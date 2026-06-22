@@ -315,6 +315,51 @@ export type Database = {
           },
         ]
       }
+      meetings: {
+        Row: {
+          created_at: string
+          creator_id: string
+          duration_minutes: number
+          id: string
+          meeting_code: string
+          meeting_type: string
+          notes: string | null
+          participant_id: string
+          starts_at: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          creator_id: string
+          duration_minutes: number
+          id?: string
+          meeting_code?: string
+          meeting_type: string
+          notes?: string | null
+          participant_id: string
+          starts_at: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          creator_id?: string
+          duration_minutes?: number
+          id?: string
+          meeting_code?: string
+          meeting_type?: string
+          notes?: string | null
+          participant_id?: string
+          starts_at?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
