@@ -11,23 +11,43 @@ export function Footer() {
             Solvix
           </div>
           <p className="mt-3 max-w-md text-sm text-muted-foreground">
-            Entdecke, teile und baue Coding- und KI-Projekte. Eine Plattform für Menschen,
-            die lernen, bauen und sich inspirieren lassen wollen.
+            Entdecke, teile und baue Coding- und KI-Projekte. Eine Plattform für Menschen, die
+            lernen, bauen und sich inspirieren lassen wollen.
           </p>
         </div>
         <div>
           <h4 className="mb-3 text-sm font-medium">Plattform</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/projects" className="hover:text-foreground">Projekte</Link></li>
-            <li><Link to="/questions" className="hover:text-foreground">Fragen</Link></li>
-            <li><Link to="/learn" className="hover:text-foreground">Lernen</Link></li>
+            <li>
+              <Link to="/projects" className="hover:text-foreground">
+                Projekte
+              </Link>
+            </li>
+            <li>
+              <Link to="/questions" className="hover:text-foreground">
+                Fragen
+              </Link>
+            </li>
+            <li>
+              <Link to="/learn" className="hover:text-foreground">
+                Lernen
+              </Link>
+            </li>
           </ul>
         </div>
         <div>
           <h4 className="mb-3 text-sm font-medium">Account</h4>
           <ul className="space-y-2 text-sm text-muted-foreground">
-            <li><Link to="/auth" className="hover:text-foreground">Login</Link></li>
-            <li><Link to="/dashboard" className="hover:text-foreground">Dashboard</Link></li>
+            <li>
+              <Link to="/auth" className="hover:text-foreground">
+                Login
+              </Link>
+            </li>
+            <li>
+              <Link to="/dashboard" className="hover:text-foreground">
+                Dashboard
+              </Link>
+            </li>
           </ul>
         </div>
       </div>

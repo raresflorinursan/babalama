@@ -682,7 +682,7 @@ function CommunityPage() {
               className={cn(
                 "inline-flex w-full items-center justify-center gap-2 whitespace-nowrap rounded-full px-4 py-2 text-sm transition-colors",
                 selectedCategories.includes(category)
-                  ? "bg-primary text-primary-foreground shadow-glow"
+                  ? "bg-blue-700 text-white shadow-glow"
                   : "border border-border bg-card/70 text-muted-foreground hover:bg-accent hover:text-foreground",
               )}
               aria-pressed={selectedCategories.includes(category)}
@@ -1077,8 +1077,10 @@ function PostCard({
               {post.likes}
             </button>
             <button
+              type="button"
               onClick={onShare}
               className="inline-flex items-center gap-1.5 hover:text-foreground"
+              aria-label={`Beitrag von ${author.name} teilen`}
             >
               <Share2 className="h-4 w-4" />
               {post.shares > 0 ? post.shares : null}

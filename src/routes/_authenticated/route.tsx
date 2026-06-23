@@ -9,7 +9,10 @@ export const Route = createFileRoute("/_authenticated")({
     if (error || !data.user) throw redirect({ to: "/auth" });
 
     const profileEnsuredKey = `solvix_profile_ensured_${data.user.id}`;
-    if (typeof window !== "undefined" && window.sessionStorage.getItem(profileEnsuredKey) !== "true") {
+    if (
+      typeof window !== "undefined" &&
+      window.sessionStorage.getItem(profileEnsuredKey) !== "true"
+    ) {
       try {
         await ensureUserProfile(data.user);
         window.sessionStorage.setItem(profileEnsuredKey, "true");

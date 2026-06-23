@@ -1,7 +1,28 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState } from "react";
-import { ArrowLeft, Github, ExternalLink, Heart, MessageCircle, ImageIcon } from "lucide-react";
+import {
+  ArrowLeft,
+  ExternalLink,
+  Github,
+  Heart,
+  ImageIcon,
+  Loader2,
+  MessageCircle,
+  Pencil,
+  Trash2,
+} from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -35,8 +56,13 @@ function ProjectDetail() {
   const { id } = Route.useParams();
   const { user } = useAuth();
   const qc = useQueryClient();
+  const navigate = useNavigate();
 
-  const { data: project, isLoading } = useQuery({
+  const {
+    data: project,
+    isLoading,
+    isError: projectError,
+  } = useQuery({
     queryKey: ["project", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -49,7 +75,7 @@ function ProjectDetail() {
     },
   });
 
-  const { data: comments } = useQuery({
+  const { data: comments, isError: commentsError } = useQuery({
     queryKey: ["project-comments", id],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -78,19 +104,31 @@ function ProjectDetail() {
   });
 
   const [comment, setComment] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const toggleLike = async () => {
     if (!user) {
       toast.error("Bitte einloggen, um zu liken");
       return;
     }
-    if (liked) {
-      await supabase.from("likes").delete().eq("project_id", id).eq("user_id", user.id);
-    } else {
-      await supabase.from("likes").insert({ project_id: id, user_id: user.id });
-    }
+    const { error } = liked
+      ? await supabase.from("likes").delete().eq("project_id", id).eq("user_id", user.id)
+      : await supabase.from("likes").insert({ project_id: id, user_id: user.id });
+    if (error) return toast.error("Like konnte nicht gespeichert werden.");
     qc.invalidateQueries({ queryKey: ["project-liked", id, user.id] });
     qc.invalidateQueries({ queryKey: ["project", id] });
+  };
+
+  const deleteProject = async () => {
+    if (!user || project?.user_id !== user.id) return;
+    setDeleting(true);
+    const { error } = await supabase.from("projects").delete().eq("id", id).eq("user_id", user.id);
+    setDeleting(false);
+    if (error) return toast.error("Projekt konnte nicht gelöscht werden.");
+
+    await qc.invalidateQueries({ queryKey: ["my-projects", user.id] });
+    toast.success("Projekt wurde gelöscht.");
+    navigate({ to: "/dashboard" });
   };
 
   const submitComment = async (e: React.FormEvent) => {
@@ -118,6 +156,24 @@ function ProjectDetail() {
       </SiteShell>
     );
   }
+  if (projectError) {
+    return (
+      <SiteShell>
+        <div className="mx-auto max-w-3xl px-4 py-24 text-center">
+          <h1 className="text-2xl font-semibold">Projekt konnte nicht geladen werden</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Prüfe deine Verbindung und versuche es erneut.
+          </p>
+          <Button
+            onClick={() => qc.invalidateQueries({ queryKey: ["project", id] })}
+            className="mt-6"
+          >
+            Erneut versuchen
+          </Button>
+        </div>
+      </SiteShell>
+    );
+  }
   if (!project) {
     return (
       <SiteShell>
@@ -132,6 +188,7 @@ function ProjectDetail() {
   }
 
   const author = project.profiles;
+  const isOwner = user?.id === project.user_id;
 
   return (
     <SiteShell>
@@ -150,6 +207,8 @@ function ProjectDetail() {
                 src={safeUrl(project.image_url)}
                 alt={project.title}
                 className="h-full w-full object-cover"
+                decoding="async"
+                fetchPriority="high"
               />
             ) : (
               <div className="flex h-full w-full items-center justify-center text-muted-foreground">
@@ -192,6 +251,44 @@ function ProjectDetail() {
                 <Heart className={"mr-2 h-4 w-4 " + (liked ? "fill-current" : "")} />{" "}
                 {project.likes_count}
               </Button>
+              {isOwner && (
+                <>
+                  <Button asChild variant="outline" size="sm">
+                    <Link to="/edit-project/$id" params={{ id }}>
+                      <Pencil className="mr-2 h-4 w-4" />
+                      Bearbeiten
+                    </Link>
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="text-destructive">
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Löschen
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Projekt wirklich löschen?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Das Projekt sowie zugehörige Likes, Kommentare und Speicherungen werden
+                          dauerhaft entfernt. Diese Aktion kann nicht rückgängig gemacht werden.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Abbrechen</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={deleteProject}
+                          disabled={deleting}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          {deleting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                          Endgültig löschen
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </>
+              )}
             </div>
 
             <div className="mt-8 grid gap-8 md:grid-cols-3">
@@ -296,6 +393,11 @@ function ProjectDetail() {
           </form>
 
           <ul className="mt-6 space-y-3">
+            {commentsError && (
+              <li className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+                Kommentare konnten nicht geladen werden.
+              </li>
+            )}
             {(comments ?? []).map((c) => (
               <li key={c.id} className="rounded-lg border border-border bg-card p-4">
                 <div className="flex items-center justify-between text-xs text-muted-foreground">

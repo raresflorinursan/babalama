@@ -39,11 +39,29 @@ type ChatMessage = {
 
 const names = [
   ["Mia Dev", "miacodes", "Frontend Developer", "Ich kann dir beim Profil-Layout helfen.", true],
-  ["AI Builder", "agentstack", "AI Agent Dev", "Wir koennen spaeter einen Agenten fuer Matching bauen.", false],
+  [
+    "AI Builder",
+    "agentstack",
+    "AI Agent Dev",
+    "Wir koennen spaeter einen Agenten fuer Matching bauen.",
+    false,
+  ],
   ["Noah SaaS", "noahmvp", "SaaS Founder", "MVP Feedback waere stark.", false],
-  ["Lina Backend", "linadb", "Backend Engineer", "Die RLS-Regeln sollten wir vor Launch pruefen.", true],
+  [
+    "Lina Backend",
+    "linadb",
+    "Backend Engineer",
+    "Die RLS-Regeln sollten wir vor Launch pruefen.",
+    true,
+  ],
   ["Tom Product", "tomships", "Product Builder", "Ich habe eine Idee fuer Projekt-Reviews.", false],
-  ["Sara Design", "saraui", "UI Designer", "Die Chatkarten koennten noch mehr Tiefe bekommen.", true],
+  [
+    "Sara Design",
+    "saraui",
+    "UI Designer",
+    "Die Chatkarten koennten noch mehr Tiefe bekommen.",
+    true,
+  ],
   ["Max Automate", "maxflows", "Automation", "Ein Onboarding-Agent passt gut zu Solvix.", false],
   ["Elias Cloud", "eliasdeploy", "DevOps", "Vercel Logs sehen jetzt sauber aus.", false],
   ["Nora Learn", "noralabs", "Student", "Welche Mini-Projekte empfiehlst du?", true],
@@ -51,7 +69,13 @@ const names = [
   ["Kira AI", "kiraprompt", "Prompt Engineer", "Wir koennen Vorlagen fuer KI-Agenten bauen.", true],
   ["Leo Code", "leocode", "Fullstack", "Supabase Storage ist perfekt fuer Avatare.", false],
   ["Amir Growth", "amirgrowth", "Growth", "Build-in-public Posts brauchen bessere Hooks.", true],
-  ["Jana Data", "janadata", "Data Analyst", "Ein Dashboard fuer Community-Metriken waere spannend.", false],
+  [
+    "Jana Data",
+    "janadata",
+    "Data Analyst",
+    "Ein Dashboard fuer Community-Metriken waere spannend.",
+    false,
+  ],
   ["Finn API", "finnapi", "API Developer", "Ich kann bei Webhooks helfen.", false],
   ["Mara QA", "maraqa", "QA Engineer", "Wir sollten Auth-Flows sauber testen.", true],
   ["Oskar Mobile", "oskario", "Mobile Dev", "Push-Notifications spaeter direkt mitdenken.", false],
@@ -67,7 +91,8 @@ const conversations: Conversation[] = names.map(([name, handle, role, preview, o
   role,
   avatar: name.slice(0, 1),
   preview,
-  time: index === 0 ? "09:52" : index < 5 ? `${9 + index}:1${index}` : index < 12 ? "Gestern" : "Mo",
+  time:
+    index === 0 ? "09:52" : index < 5 ? `${9 + index}:1${index}` : index < 12 ? "Gestern" : "Mo",
   online,
   unread: index % 5 === 0 ? index + 1 : undefined,
   pinned: index < 2,
@@ -123,7 +148,8 @@ function ChatsPage() {
     );
   }, [localConversations, searchQuery]);
 
-  const activeChat = localConversations.find((chat) => chat.id === activeId) ?? localConversations[0];
+  const activeChat =
+    localConversations.find((chat) => chat.id === activeId) ?? localConversations[0];
   const isFollowing = Boolean(followingIds[activeChat.id]);
   const bellActive = Boolean(bellIds[activeChat.id]);
 
@@ -181,7 +207,9 @@ function ChatsPage() {
                 >
                   <div className="relative grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-gradient-primary text-sm font-semibold text-primary-foreground">
                     {chat.avatar}
-                    {chat.online && <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card bg-emerald-400" />}
+                    {chat.online && (
+                      <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card bg-emerald-400" />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
@@ -190,7 +218,11 @@ function ChatsPage() {
                     </div>
                     <div className="mt-0.5 flex items-center gap-2">
                       <span className="truncate text-xs text-muted-foreground">@{chat.handle}</span>
-                      {chat.pinned && <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary-glow">Pinned</span>}
+                      {chat.pinned && (
+                        <span className="rounded-full bg-primary/10 px-1.5 py-0.5 text-[10px] text-primary-glow">
+                          Pinned
+                        </span>
+                      )}
                     </div>
                   </div>
                   {chat.unread && (
@@ -208,7 +240,9 @@ function ChatsPage() {
               <div className="flex min-w-0 items-center gap-3">
                 <div className="relative grid h-12 w-12 shrink-0 place-items-center rounded-xl bg-gradient-primary text-sm font-semibold text-primary-foreground">
                   {activeChat.avatar}
-                  {activeChat.online && <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card bg-emerald-400" />}
+                  {activeChat.online && (
+                    <span className="absolute -bottom-0.5 -right-0.5 h-3.5 w-3.5 rounded-full border-2 border-card bg-emerald-400" />
+                  )}
                 </div>
                 <div className="min-w-0">
                   <h2 className="truncate text-sm font-semibold">{activeChat.name}</h2>
@@ -220,16 +254,30 @@ function ChatsPage() {
               <div className="flex shrink-0 flex-wrap items-center justify-end gap-2">
                 <Button
                   size="sm"
-                  onClick={() => setFollowingIds((current) => ({ ...current, [activeChat.id]: !current[activeChat.id] }))}
+                  onClick={() =>
+                    setFollowingIds((current) => ({
+                      ...current,
+                      [activeChat.id]: !current[activeChat.id],
+                    }))
+                  }
                   className={`h-9 ${isFollowing ? "bg-accent text-foreground hover:bg-accent/80" : "bg-gradient-primary shadow-glow hover:opacity-90"}`}
                 >
-                  {isFollowing ? <UserCheck className="mr-2 h-4 w-4" /> : <UserPlus className="mr-2 h-4 w-4" />}
+                  {isFollowing ? (
+                    <UserCheck className="mr-2 h-4 w-4" />
+                  ) : (
+                    <UserPlus className="mr-2 h-4 w-4" />
+                  )}
                   <span className="hidden sm:inline">{isFollowing ? "Entfolgen" : "Folgen"}</span>
                 </Button>
                 <Button
                   size="icon"
                   variant={bellActive ? "default" : "outline"}
-                  onClick={() => setBellIds((current) => ({ ...current, [activeChat.id]: !current[activeChat.id] }))}
+                  onClick={() =>
+                    setBellIds((current) => ({
+                      ...current,
+                      [activeChat.id]: !current[activeChat.id],
+                    }))
+                  }
                   className={`h-9 w-9 ${bellActive ? "bg-primary text-primary-foreground shadow-glow" : ""}`}
                   aria-label={bellActive ? "Glocke deaktivieren" : "Glocke aktivieren"}
                 >
@@ -239,7 +287,10 @@ function ChatsPage() {
                   <Video className="mr-2 h-4 w-4" />
                   <span className="hidden sm:inline">Meeting</span>
                 </Button>
-                <button className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Chat Optionen">
+                <button
+                  className="rounded-md p-2 text-muted-foreground hover:bg-accent hover:text-foreground"
+                  aria-label="Chat Optionen"
+                >
                   <MoreHorizontal className="h-4 w-4" />
                 </button>
               </div>
@@ -251,14 +302,23 @@ function ChatsPage() {
                 Privater Chat zwischen dir und {activeChat.name}
               </div>
               {activeChat.messages.map((message) => (
-                <div key={message.id} className={`flex ${message.own ? "justify-end" : "justify-start"}`}>
+                <div
+                  key={message.id}
+                  className={`flex ${message.own ? "justify-end" : "justify-start"}`}
+                >
                   <div
                     className={`max-w-[78%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
-                      message.own ? "bg-primary text-primary-foreground" : "bg-accent text-foreground"
+                      message.own
+                        ? "bg-primary text-primary-foreground"
+                        : "bg-accent text-foreground"
                     }`}
                   >
                     <p>{message.body}</p>
-                    <div className={`mt-1 text-[10px] ${message.own ? "text-primary-foreground/70" : "text-muted-foreground"}`}>{message.time}</div>
+                    <div
+                      className={`mt-1 text-[10px] ${message.own ? "text-primary-foreground/70" : "text-muted-foreground"}`}
+                    >
+                      {message.time}
+                    </div>
                   </div>
                 </div>
               ))}
@@ -266,10 +326,16 @@ function ChatsPage() {
 
             <div className="border-t border-border p-4">
               <div className="flex items-end gap-3 rounded-2xl border border-border bg-background/70 p-2">
-                <button className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Datei anhaengen">
+                <button
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground"
+                  aria-label="Datei anhaengen"
+                >
                   <Paperclip className="h-4 w-4" />
                 </button>
-                <button className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground" aria-label="Code senden">
+                <button
+                  className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl text-muted-foreground hover:bg-accent hover:text-foreground"
+                  aria-label="Code senden"
+                >
                   <Code2 className="h-4 w-4" />
                 </button>
                 <textarea
@@ -284,7 +350,12 @@ function ChatsPage() {
                   placeholder={`Nachricht an ${activeChat.name}`}
                   className="max-h-32 min-h-10 flex-1 resize-none bg-transparent px-1 py-2 text-sm outline-none placeholder:text-muted-foreground"
                 />
-                <Button onClick={sendMessage} disabled={!messageText.trim()} size="icon" className="h-10 w-10 shrink-0 bg-gradient-primary shadow-glow">
+                <Button
+                  onClick={sendMessage}
+                  disabled={!messageText.trim()}
+                  size="icon"
+                  className="h-10 w-10 shrink-0 bg-gradient-primary shadow-glow"
+                >
                   <Send className="h-4 w-4" />
                 </Button>
               </div>

@@ -54,7 +54,10 @@ export const Route = createFileRoute("/_authenticated/edit-profile")({
   head: () => ({
     meta: [
       { title: "Profil bearbeiten — Solvix" },
-      { name: "description", content: "Bearbeite dein Solvix Profil, Avatar, Bio und öffentliche Links." },
+      {
+        name: "description",
+        content: "Bearbeite dein Solvix Profil, Avatar, Bio und öffentliche Links.",
+      },
     ],
   }),
   component: EditProfilePage,
@@ -72,7 +75,11 @@ function EditProfilePage() {
     queryKey: ["edit-profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", user!.id)
+        .maybeSingle();
       if (error) throw error;
       return data as Profile | null;
     },
@@ -102,12 +109,21 @@ function EditProfilePage() {
     [form.skills],
   );
 
-  const displayName = form.fullName.trim() || form.username.trim() || user?.email?.split("@")[0] || "Solvix Creator";
+  const displayName =
+    form.fullName.trim() || form.username.trim() || user?.email?.split("@")[0] || "Solvix Creator";
   const username = form.username.trim() || "username";
   const initial = displayName.slice(0, 1).toUpperCase();
 
   const completion = useMemo(() => {
-    const fields = [form.fullName, form.username, form.bio, form.avatarUrl, form.websiteUrl, form.githubUrl, form.skills];
+    const fields = [
+      form.fullName,
+      form.username,
+      form.bio,
+      form.avatarUrl,
+      form.websiteUrl,
+      form.githubUrl,
+      form.skills,
+    ];
     const done = fields.filter((v) => v.trim().length > 0).length;
     return Math.round((done / fields.length) * 100);
   }, [form]);
@@ -150,9 +166,12 @@ function EditProfilePage() {
 
   const handleSave = async () => {
     if (!user) return;
-    const usernameValidation = validateUsername(form.username, { allowReserved: isSolvixOwner(user.id) });
+    const usernameValidation = validateUsername(form.username, {
+      allowReserved: isSolvixOwner(user.id),
+    });
     const currentUsername = normalizeUsername(profile?.username ?? "");
-    const keepsExistingReservedUsername = !usernameValidation.valid && usernameValidation.username === currentUsername;
+    const keepsExistingReservedUsername =
+      !usernameValidation.valid && usernameValidation.username === currentUsername;
 
     if (!usernameValidation.valid && !keepsExistingReservedUsername) {
       toast.error(usernameValidation.message);
@@ -181,7 +200,9 @@ function EditProfilePage() {
       ]);
       toast.success("Profil gespeichert.");
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Profil konnte nicht gespeichert werden.");
+      toast.error(
+        error instanceof Error ? error.message : "Profil konnte nicht gespeichert werden.",
+      );
     } finally {
       setSaving(false);
     }
@@ -200,14 +221,19 @@ function EditProfilePage() {
               <ArrowLeft className="h-3.5 w-3.5" />
               Zurück zum Dashboard
             </Link>
-            <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">Profil bearbeiten</h1>
+            <h1 className="mt-3 text-3xl font-semibold tracking-tight sm:text-4xl">
+              Profil bearbeiten
+            </h1>
             <p className="mt-2 max-w-xl text-sm text-muted-foreground">
-              Verwalte deine öffentliche Identität auf Solvix. Änderungen werden sofort in der Vorschau sichtbar.
+              Verwalte deine öffentliche Identität auf Solvix. Änderungen werden sofort in der
+              Vorschau sichtbar.
             </p>
           </div>
           <div className="flex items-center gap-3">
             <div className="hidden text-right sm:block">
-              <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Vollständigkeit</div>
+              <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Vollständigkeit
+              </div>
               <div className="text-2xl font-semibold tabular-nums">{completion}%</div>
             </div>
             <Button asChild variant="outline" size="sm">
@@ -242,7 +268,11 @@ function EditProfilePage() {
               <div className="flex flex-col items-start gap-5 sm:flex-row sm:items-center">
                 <div className="relative h-24 w-24 shrink-0 overflow-hidden rounded-2xl border border-border bg-accent ring-1 ring-border/50">
                   {form.avatarUrl ? (
-                    <img src={form.avatarUrl} alt="Profilbild" className="h-full w-full object-cover" />
+                    <img
+                      src={form.avatarUrl}
+                      alt="Profilbild"
+                      className="h-full w-full object-cover"
+                    />
                   ) : (
                     <div className="grid h-full w-full place-items-center bg-gradient-primary text-3xl font-semibold text-primary-foreground">
                       {initial}
@@ -278,7 +308,9 @@ function EditProfilePage() {
                   )}
                 </div>
               </div>
-              <p className="mt-4 text-xs text-muted-foreground">PNG, JPG oder WebP · max. 5 MB · empfohlen 400×400 px</p>
+              <p className="mt-4 text-xs text-muted-foreground">
+                PNG, JPG oder WebP · max. 5 MB · empfohlen 400×400 px
+              </p>
             </SectionCard>
 
             {/* Identity */}
@@ -400,7 +432,9 @@ function EditProfilePage() {
           {/* PREVIEW column */}
           <aside className="lg:sticky lg:top-24 lg:h-fit">
             <div className="mb-3 flex items-center justify-between">
-              <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">Live-Vorschau</div>
+              <div className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+                Live-Vorschau
+              </div>
               <div className="flex h-2 w-2 items-center justify-center">
                 <span className="absolute h-2 w-2 animate-ping rounded-full bg-primary/60" />
                 <span className="h-1.5 w-1.5 rounded-full bg-primary" />
@@ -426,7 +460,8 @@ function EditProfilePage() {
                 <h3 className="mt-4 truncate text-xl font-semibold">{displayName}</h3>
                 <p className="text-sm text-muted-foreground">@{username}</p>
                 <p className="mt-3 min-h-[2.5rem] text-sm text-muted-foreground">
-                  {form.bio.trim() || "Kurze Bio über dich, deine Projekte und woran du gerade baust."}
+                  {form.bio.trim() ||
+                    "Kurze Bio über dich, deine Projekte und woran du gerade baust."}
                 </p>
                 {(safeUrl(form.githubUrl) || safeUrl(form.websiteUrl)) && (
                   <div className="mt-4 flex flex-wrap gap-3 border-t border-border/60 pt-4 text-sm">
@@ -447,7 +482,10 @@ function EditProfilePage() {
                 {skills.length > 0 && (
                   <div className="mt-4 flex flex-wrap gap-1.5">
                     {skills.map((skill) => (
-                      <span key={skill} className="rounded-md bg-accent px-2 py-0.5 text-xs text-muted-foreground">
+                      <span
+                        key={skill}
+                        className="rounded-md bg-accent px-2 py-0.5 text-xs text-muted-foreground"
+                      >
                         {skill}
                       </span>
                     ))}
@@ -475,7 +513,11 @@ function EditProfilePage() {
               size="sm"
               className="bg-gradient-primary shadow-glow hover:opacity-90"
             >
-              {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+              {saving ? (
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              ) : (
+                <Save className="mr-2 h-4 w-4" />
+              )}
               Profil speichern
             </Button>
           </div>
@@ -517,10 +559,20 @@ function SectionCard({
   );
 }
 
-function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
+function Field({
+  label,
+  hint,
+  children,
+}: {
+  label: string;
+  hint?: string;
+  children: React.ReactNode;
+}) {
   return (
     <div className="space-y-1.5">
-      <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">{label}</Label>
+      <Label className="text-xs font-medium uppercase tracking-wider text-muted-foreground">
+        {label}
+      </Label>
       {children}
       {hint && <p className="text-xs text-muted-foreground/70">{hint}</p>}
     </div>

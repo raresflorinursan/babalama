@@ -14,7 +14,7 @@ function usernameFromUser(user: User) {
   const wantedUsername =
     typeof user.user_metadata?.username === "string" && user.user_metadata.username.trim()
       ? user.user_metadata.username
-      : user.email?.split("@")[0] ?? "";
+      : (user.email?.split("@")[0] ?? "");
 
   const normalized = normalizeUsername(wantedUsername);
   const validation = validateUsername(normalized, { allowReserved: isSolvixOwner(user.id) });

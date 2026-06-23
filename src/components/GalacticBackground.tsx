@@ -43,7 +43,7 @@ export function GalacticBackground() {
 
       draw(t: number) {
         const twinkle = 0.5 + 0.5 * Math.sin(t * this.twinkleSpeed * 60 + this.twinkleOffset);
-        const yd = ((this.y - scrollY * this.parallax * 0.15) % height + height) % height;
+        const yd = (((this.y - scrollY * this.parallax * 0.15) % height) + height) % height;
 
         ctx!.save();
         ctx!.globalAlpha = this.opacity * (0.5 + 0.5 * twinkle);
@@ -129,7 +129,7 @@ export function GalacticBackground() {
 
       draw(t: number) {
         const pulse = 0.6 + 0.4 * Math.sin(t * 0.02 + this.pulseOffset);
-        const yd = ((this.y - scrollY * this.parallax * 0.1) % height + height) % height;
+        const yd = (((this.y - scrollY * this.parallax * 0.1) % height) + height) % height;
 
         ctx!.save();
         ctx!.shadowBlur = 18 * pulse;
@@ -232,10 +232,12 @@ export function GalacticBackground() {
       const maxDist = 250 + Math.abs(scrollDelta) * 380;
 
       for (let i = 0; i < nodeList.length; i += 1) {
-        const yi = ((nodeList[i].y - scrollY * nodeList[i].parallax * 0.1) % height + height) % height;
+        const yi =
+          (((nodeList[i].y - scrollY * nodeList[i].parallax * 0.1) % height) + height) % height;
 
         for (let j = i + 1; j < nodeList.length; j += 1) {
-          const yj = ((nodeList[j].y - scrollY * nodeList[j].parallax * 0.1) % height + height) % height;
+          const yj =
+            (((nodeList[j].y - scrollY * nodeList[j].parallax * 0.1) % height) + height) % height;
           const dx = nodeList[i].x - nodeList[j].x;
           const dy = yi - yj;
           const dist = Math.sqrt(dx * dx + dy * dy);
@@ -265,7 +267,14 @@ export function GalacticBackground() {
       const totalHeight = document.body.scrollHeight - window.innerHeight;
       const progress = totalHeight > 0 ? Math.min(scrollY / totalHeight, 1) : 0;
       const centerY = height * (0.35 - progress * 0.25);
-      const glow = ctx!.createRadialGradient(width * 0.5, centerY, 0, width * 0.5, centerY, width * 0.38);
+      const glow = ctx!.createRadialGradient(
+        width * 0.5,
+        centerY,
+        0,
+        width * 0.5,
+        centerY,
+        width * 0.38,
+      );
 
       glow.addColorStop(0, `rgba(14,165,233,${0.07 + progress * 0.03})`);
       glow.addColorStop(0.4, "rgba(129,140,248,0.025)");
@@ -274,7 +283,14 @@ export function GalacticBackground() {
       ctx!.fillRect(0, 0, width, height);
 
       const secondX = width * (0.25 + progress * 0.5);
-      const secondGlow = ctx!.createRadialGradient(secondX, height * 0.65, 0, secondX, height * 0.65, width * 0.28);
+      const secondGlow = ctx!.createRadialGradient(
+        secondX,
+        height * 0.65,
+        0,
+        secondX,
+        height * 0.65,
+        width * 0.28,
+      );
       secondGlow.addColorStop(0, `rgba(192,132,252,${0.05 + progress * 0.03})`);
       secondGlow.addColorStop(1, "transparent");
       ctx!.fillStyle = secondGlow;
@@ -341,5 +357,11 @@ export function GalacticBackground() {
     };
   }, []);
 
-  return <canvas ref={canvasRef} className="pointer-events-none fixed inset-0 z-0 h-screen w-screen" aria-hidden="true" />;
+  return (
+    <canvas
+      ref={canvasRef}
+      className="pointer-events-none fixed inset-0 z-0 h-screen w-screen"
+      aria-hidden="true"
+    />
+  );
 }

@@ -66,7 +66,10 @@ function AuthCallbackPage() {
           <BrandMark className="mx-auto h-12 w-12" />
           <h1 className="mt-5 text-xl font-semibold">Google-Login</h1>
           <p className="mt-2 text-sm text-muted-foreground">{message}</p>
-          <Link to="/auth" className="mt-5 inline-flex text-sm text-primary-glow hover:text-primary">
+          <Link
+            to="/auth"
+            className="mt-5 inline-flex text-sm text-primary-glow hover:text-primary"
+          >
             Zurück zum Login
           </Link>
         </div>

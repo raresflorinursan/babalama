@@ -9,13 +9,18 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { supabase } from "@/integrations/supabase/client";
 import { BrandMark } from "@/components/BrandMark";
 import { normalizeUsername, validateUsername } from "@/lib/platform-security";
+import { validatePassword } from "@/lib/password-security";
 import { ensureUserProfile } from "@/lib/auth-profile";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
       { title: "Login & Registrieren — Solvix" },
-      { name: "description", content: "Melde dich an oder erstelle einen kostenlosen Account, um Projekte zu teilen und Fragen zu stellen." },
+      {
+        name: "description",
+        content:
+          "Melde dich an oder erstelle einen kostenlosen Account, um Projekte zu teilen und Fragen zu stellen.",
+      },
     ],
   }),
   component: AuthPage,
@@ -41,7 +46,9 @@ function AuthPage() {
 
           <div className="w-full rounded-2xl border border-border bg-card p-6 shadow-card-elegant">
             <h1 className="text-xl font-semibold">Willkommen bei Solvix</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Logge dich ein oder erstelle einen Account.</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Logge dich ein oder erstelle einen Account.
+            </p>
 
             <GoogleButton />
 
@@ -87,9 +94,12 @@ function GoogleButton() {
     }
   };
   return (
-    <Button onClick={handle} disabled={loading} variant="outline" className="w-full">
+    <Button type="button" onClick={handle} disabled={loading} variant="outline" className="w-full">
       <svg viewBox="0 0 24 24" className="mr-2 h-4 w-4" aria-hidden>
-        <path fill="#EA4335" d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4-5.5 4-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12z"/>
+        <path
+          fill="#EA4335"
+          d="M12 10.2v3.9h5.5c-.2 1.4-1.6 4-5.5 4-3.3 0-6-2.7-6-6.1s2.7-6.1 6-6.1c1.9 0 3.1.8 3.8 1.5l2.6-2.5C16.8 3.4 14.6 2.4 12 2.4 6.7 2.4 2.4 6.7 2.4 12s4.3 9.6 9.6 9.6c5.5 0 9.2-3.9 9.2-9.4 0-.6-.1-1.1-.2-1.6H12z"
+        />
       </svg>
       Mit Google fortfahren
     </Button>
@@ -122,13 +132,31 @@ function LoginForm() {
     <form onSubmit={submit} className="mt-4 space-y-3">
       <div>
         <Label htmlFor="login-email">E-Mail</Label>
-        <Input id="login-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input
+          id="login-email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
       <div>
         <Label htmlFor="login-pw">Passwort</Label>
-        <Input id="login-pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Input
+          id="login-pw"
+          type="password"
+          autoComplete="current-password"
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </div>
-      <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow hover:opacity-90">
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-gradient-primary shadow-glow hover:opacity-90"
+      >
         {loading ? "Wird angemeldet…" : "Einloggen"}
       </Button>
     </form>
@@ -144,7 +172,11 @@ function SignupForm() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (password.length < 6) { toast.error("Passwort min. 6 Zeichen"); return; }
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      toast.error(passwordError);
+      return;
+    }
     const usernameValidation = validateUsername(username);
     if (!usernameValidation.valid) {
       toast.error(usernameValidation.message);
@@ -181,17 +213,42 @@ function SignupForm() {
     <form onSubmit={submit} className="mt-4 space-y-3">
       <div>
         <Label htmlFor="su-username">Benutzername</Label>
-        <Input id="su-username" required value={username} onChange={(e) => setUsername(normalizeUsername(e.target.value))} />
+        <Input
+          id="su-username"
+          autoComplete="username"
+          required
+          value={username}
+          onChange={(e) => setUsername(normalizeUsername(e.target.value))}
+        />
       </div>
       <div>
         <Label htmlFor="su-email">E-Mail</Label>
-        <Input id="su-email" type="email" required value={email} onChange={(e) => setEmail(e.target.value)} />
+        <Input
+          id="su-email"
+          type="email"
+          autoComplete="email"
+          required
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
       </div>
       <div>
         <Label htmlFor="su-pw">Passwort</Label>
-        <Input id="su-pw" type="password" required value={password} onChange={(e) => setPassword(e.target.value)} />
+        <Input
+          id="su-pw"
+          type="password"
+          autoComplete="new-password"
+          minLength={10}
+          required
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
       </div>
-      <Button type="submit" disabled={loading} className="w-full bg-gradient-primary shadow-glow hover:opacity-90">
+      <Button
+        type="submit"
+        disabled={loading}
+        className="w-full bg-gradient-primary shadow-glow hover:opacity-90"
+      >
         {loading ? "Erstelle Account…" : "Account erstellen"}
       </Button>
     </form>

@@ -8,6 +8,8 @@ export function BrandMark({ className = "h-8 w-8" }: BrandMarkProps) {
       src="/solvix-logo.png"
       alt="Solvix"
       className={`${className} rounded-lg border border-white/10 object-cover shadow-glow`}
+      decoding="async"
+      fetchPriority="high"
     />
   );
 }

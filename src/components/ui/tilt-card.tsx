@@ -82,11 +82,7 @@ export function TiltCard({
           ...style,
         } as CSSProperties
       }
-      className={cn(
-        "tilt-card",
-        visible ? "tilt-card--in" : "tilt-card--out",
-        className,
-      )}
+      className={cn("tilt-card", visible ? "tilt-card--in" : "tilt-card--out", className)}
     >
       <div className="tilt-card__inner">
         {children}

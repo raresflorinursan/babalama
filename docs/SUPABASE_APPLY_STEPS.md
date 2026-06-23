@@ -36,7 +36,7 @@ muessen in der Reihenfolge ihrer Versionsnummer folgen. Der aktuell bestaetigte
 Live-Stand endet bei:
 
 ```text
-20260622224759_optimize_legacy_rls_policies
+20260623162424_add_profile_author_relationships
 ```
 
 Den aktuellen Stand immer zuerst mit `supabase_migrations.schema_migrations`
@@ -60,6 +60,7 @@ Das muss dein echter Supabase-Auth-User sein. Wenn nicht, vor dem Ausfuehren ers
 - Community-Posts muessen eingeloggten echten Nutzern gehoeren.
 - Community-Posts sind auf 200 Zeichen begrenzt.
 - Likes und gespeicherte Projekte sind privat pro Nutzer.
+- Projekte, Fragen, Antworten und Kommentare sind eindeutig mit ihrem oeffentlichen Autorenprofil verknuepft.
 - Avatare und Projektbilder koennen nur im eigenen User-Ordner geschrieben werden.
 - Service Role Key bleibt nur serverseitig.
 

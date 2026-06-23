@@ -7,6 +7,20 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks(id) {
+            if (/node_modules\/(?:@supabase|@lovable\.dev\/cloud-auth-js)\//.test(id)) {
+              return "supabase-vendor";
+            }
+            return undefined;
+          },
+        },
+      },
+    },
+  },
   nitro: {
     preset: "vercel",
   },

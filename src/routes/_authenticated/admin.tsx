@@ -236,8 +236,13 @@ function AdminPage() {
             Meldungen werden geladen…
           </div>
         ) : error ? (
-          <div className="py-16 text-center text-sm text-destructive">
-            Moderationsdaten konnten nicht geladen werden.
+          <div className="py-16 text-center">
+            <p className="text-sm text-destructive">
+              Moderationsdaten konnten nicht geladen werden.
+            </p>
+            <Button type="button" variant="outline" className="mt-4" onClick={() => void refetch()}>
+              Erneut versuchen
+            </Button>
           </div>
         ) : visibleReports.length === 0 ? (
           <div className="mt-8 rounded-xl border border-dashed border-border py-16 text-center">

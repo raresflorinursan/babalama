@@ -26,6 +26,7 @@ import { Route as AuthenticatedEditProfileRouteImport } from './routes/_authenti
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedAskQuestionRouteImport } from './routes/_authenticated/ask-question'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedEditProjectIdRouteImport } from './routes/_authenticated/edit-project.$id'
 
 const MeetingsRoute = MeetingsRouteImport.update({
   id: '/meetings',
@@ -114,6 +115,12 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedEditProjectIdRoute =
+  AuthenticatedEditProjectIdRouteImport.update({
+    id: '/edit-project/$id',
+    path: '/edit-project/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByFullPath {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
   '/questions/': typeof QuestionsIndexRoute
+  '/edit-project/$id': typeof AuthenticatedEditProjectIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,6 +158,7 @@ export interface FileRoutesByTo {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects': typeof ProjectsIndexRoute
   '/questions': typeof QuestionsIndexRoute
+  '/edit-project/$id': typeof AuthenticatedEditProjectIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,6 +179,7 @@ export interface FileRoutesById {
   '/projects/$id': typeof ProjectsIdRoute
   '/projects/': typeof ProjectsIndexRoute
   '/questions/': typeof QuestionsIndexRoute
+  '/_authenticated/edit-project/$id': typeof AuthenticatedEditProjectIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -190,6 +200,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/'
     | '/questions/'
+    | '/edit-project/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -208,6 +219,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects'
     | '/questions'
+    | '/edit-project/$id'
   id:
     | '__root__'
     | '/'
@@ -227,6 +239,7 @@ export interface FileRouteTypes {
     | '/projects/$id'
     | '/projects/'
     | '/questions/'
+    | '/_authenticated/edit-project/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -364,6 +377,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/edit-project/$id': {
+      id: '/_authenticated/edit-project/$id'
+      path: '/edit-project/$id'
+      fullPath: '/edit-project/$id'
+      preLoaderRoute: typeof AuthenticatedEditProjectIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
@@ -373,6 +393,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedEditProfileRoute: typeof AuthenticatedEditProfileRoute
   AuthenticatedUploadProjectRoute: typeof AuthenticatedUploadProjectRoute
+  AuthenticatedEditProjectIdRoute: typeof AuthenticatedEditProjectIdRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -381,6 +402,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedEditProfileRoute: AuthenticatedEditProfileRoute,
   AuthenticatedUploadProjectRoute: AuthenticatedUploadProjectRoute,
+  AuthenticatedEditProjectIdRoute: AuthenticatedEditProjectIdRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =

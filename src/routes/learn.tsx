@@ -36,6 +36,7 @@ import { SiteShell } from "@/components/layout/SiteShell";
 import { TiltCard } from "@/components/ui/tilt-card";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
+import type { LearningModuleId } from "@/lib/project-form";
 import { toast } from "sonner";
 
 type Difficulty = "Starter" | "Anfänger" | "Mittel" | "Fortgeschritten";
@@ -48,7 +49,7 @@ type QuizQuestion = {
 };
 
 type LearningModule = {
-  id: string;
+  id: LearningModuleId;
   number: string;
   title: string;
   subtitle: string;
@@ -67,7 +68,7 @@ type LearningModule = {
 };
 
 type ProjectIdea = {
-  moduleId: string;
+  moduleId: LearningModuleId;
   moduleTitle: string;
   title: string;
   description: string;
@@ -668,7 +669,11 @@ function LearnPage() {
                 <span className="text-muted-foreground">Gesamtfortschritt</span>
                 <span className="font-medium">{progress}%</span>
               </div>
-              <Progress value={progress} />
+              <Progress
+                value={progress}
+                aria-label="Gesamtfortschritt"
+                aria-valuetext={`${progress} Prozent abgeschlossen`}
+              />
             </div>
             <div className="mt-5 grid grid-cols-3 gap-3">
               <Metric value={`${completedCount}/${modules.length}`} label="Module" />

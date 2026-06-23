@@ -104,16 +104,19 @@ export function Navbar() {
         </div>
 
         <button
+          type="button"
           onClick={() => setOpen((s) => !s)}
           className="rounded-md p-2 text-foreground md:hidden"
-          aria-label="Menü"
+          aria-label={open ? "Menü schließen" : "Menü öffnen"}
+          aria-expanded={open}
+          aria-controls="mobile-navigation"
         >
           {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
         </button>
       </div>
 
       {open && (
-        <div className="border-t border-border/60 bg-background md:hidden">
+        <div id="mobile-navigation" className="border-t border-border/60 bg-background md:hidden">
           <div className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3">
             {navItems.map((i) => (
               <Link
@@ -144,6 +147,7 @@ export function Navbar() {
                   Dashboard
                 </Link>
                 <button
+                  type="button"
                   onClick={() => {
                     setOpen(false);
                     handleSignOut();

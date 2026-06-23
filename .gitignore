@@ -16,6 +16,10 @@ output
 .vinxi
 .tanstack/**
 .nitro
+coverage
+playwright-report
+test-results
+supabase/.temp
 .env
 .env.*
 !.env.example

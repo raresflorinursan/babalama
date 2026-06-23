@@ -189,6 +189,7 @@ function ProfilePage() {
                   src={visibleProfile.avatar_url}
                   alt={visibleProfile.full_name ?? visibleProfile.username ?? "Profilbild"}
                   className="h-full w-full object-cover"
+                  decoding="async"
                 />
               ) : (
                 <div className="grid h-full w-full place-items-center bg-gradient-primary text-2xl font-semibold text-primary-foreground">

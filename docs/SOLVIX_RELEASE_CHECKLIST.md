@@ -19,6 +19,9 @@ Status: In Arbeit
 - [x] Supabase-Projekt final vereinheitlichen
 - [ ] Vercel Environment Variables final pruefen
 - [x] Build und Deployment nach jeder Kern-Aenderung pruefen
+- [x] Unit- und Browser-Testsystem einrichten
+- [x] Fehler- und Ladezustande fuer zentrale Datenansichten einbauen
+- [x] Projekt-Bearbeitung und bestaetigtes Loeschen umsetzen
 
 ## Phase 2: Echtdaten statt Mock-Daten
 
@@ -53,6 +56,7 @@ Status: Abgeschlossen
 Status: In Arbeit
 
 - [x] Reservierte Namen wie Solvix, SolvixCEO und aehnliche Schreibweisen vorbereitet
+- [x] Unicode-, Lookalike- und Leetspeak-Umgehungen reservierter Namen sperren
 - [x] Private Admin-Tabelle vorbereitet
 - [x] Community-Posts auf menschliche Quelle beschraenkt
 - [x] Basis-Rate-Limits fuer Community-Posts vorbereitet
@@ -71,7 +75,27 @@ Status: In Arbeit
 - [x] Oeffentliche Storage-Auflistung fuer Avatare und Projektbilder verhindern
 - [x] Doppelte Legacy-RLS-Policies entfernen
 - [x] RLS-Policies fuer skalierbare Auth-Auswertung optimieren
+- [x] Automatische Data-API-Rechte fuer neue Datenbankobjekte deaktivieren
+- [x] Eindeutige Profil-Autor-Beziehungen fuer Projekte, Fragen, Antworten und Kommentare herstellen
 - [ ] Supabase-Schutz vor geleakten Passwoertern im Auth-Dashboard aktivieren
+
+Hinweis: Der Schutz vor geleakten Passwoertern ist im aktuellen Supabase-Tarif nicht verfuegbar.
+
+## Technische Release-Verifikation
+
+Status: In Arbeit
+
+- [x] Produktions-Bundle unter die 500-kB-Warnschwelle aufteilen
+- [x] Query-Caching und unnoetige Refetches optimieren
+- [x] Mobile Navigation ohne horizontalen Overflow pruefen
+- [x] Tastatursprung zum Hauptinhalt einbauen
+- [x] WCAG-A/AA-Scans fuer Kernseiten einrichten
+- [x] Admin- und Supabase-Sicherheitsaudit durchfuehren
+- [x] TypeScript gegen die live generierten Supabase-Typen pruefen
+- [x] Vollstaendige Desktop-, Mobil- und WCAG-Browsertests ausfuehren
+- [x] Vollstaendigen finalen Lint-, TypeScript-, Test-, Audit- und Build-Lauf ausfuehren
+- [ ] Geprueften Stand committen und auf GitHub `main` pushen
+- [ ] Vercel-Produktionsdeployment und Live-Routen kontrollieren
 
 ## Phase 5: Public Beta
 

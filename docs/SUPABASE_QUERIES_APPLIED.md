@@ -1250,3 +1250,51 @@ realen Auth-Kontext geprueft:
 - `anon` und `authenticated` besitzen keine Schreibrechte auf Achievements
 - der Lernmodul-Check fuer Projekte ist in der Datenbank aktiv
 - Linter fuer die geaenderten Dateien und Vercel-Produktions-Build sind erfolgreich
+
+## 15. Reserved Username Hardening (2026-06-23)
+
+Live angewendet als Migration `20260623064800_strengthen_reserved_usernames`.
+
+- reservierte Solvix-Namen werden nach Unicode-Normalisierung geprueft
+- diakritische Zeichen und kyrillische Lookalikes werden vereinheitlicht
+- Leetspeak wie `s0lvix` und wiederholte Buchstaben koennen die Sperre nicht umgehen
+- nur das private Owner-/Admin-Register darf reservierte Markennamen verwenden
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260623064800_strengthen_reserved_usernames.sql`
+
+## 16. Secure Data API Defaults (2026-06-23)
+
+Live angewendet als Migration `20260623160309_harden_future_data_api_grants`.
+
+- neue Tabellen, Sequenzen und Funktionen der Rolle `postgres` erhalten keine automatischen Client-Rechte
+- neue Data-API-Freigaben muessen explizit zusammen mit RLS und Policies migriert werden
+- bestehende Tabellenrechte und das aktuelle Anwendungsverhalten bleiben unveraendert
+- die Aenderung wurde vorab in einer Transaktion getestet und vollstaendig zurueckgerollt
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260623160309_harden_future_data_api_grants.sql`
+
+## 17. Final Security Audit (2026-06-23)
+
+Live geprueft wurden:
+
+- keine oeffentliche Solvix-Tabelle ohne RLS, FORCE RLS oder Policy
+- keine Client-Tabellenrechte im privaten Admin-Schema
+- keine oeffentlich ausfuehrbare `SECURITY DEFINER`-Funktion im `public`-Schema
+- ein konsistenter Owner-Eintrag ohne Rollenabweichung im Profil
+- keine RLS- oder Mehrfach-Policy-Warnungen im Performance Advisor
+- nur bekannte Hinweise fuer den privaten Adminspeicher, den tarifabhaengigen Passwortschutz und noch unbenutzte Indizes
+
+## 18. Profile Author Relationships (2026-06-23)
+
+Live angewendet als Migration `20260623162424_add_profile_author_relationships`.
+
+- Projekte, Fragen, Antworten und Kommentare verweisen neben `auth.users` eindeutig auf `public.profiles`
+- PostgREST kann Autorenprofile dadurch als echte Relation aufloesen
+- die bestehenden Kaskaden beim Loeschen eines Kontos bleiben erhalten
+- die Migration ist idempotent und wurde vor der Live-Anwendung in einer Transaktion getestet
+- die Supabase-TypeScript-Typen wurden danach aus dem Live-Schema neu erzeugt
+
+Der vollstaendige SQL-Stand liegt in:
+`supabase/migrations/20260623162424_add_profile_author_relationships.sql`

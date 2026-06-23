@@ -1,5 +1,15 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight, Sparkles, Rocket, MessageCircleQuestion, BookOpen, Upload, Code2, Brain, Zap } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  Rocket,
+  MessageCircleQuestion,
+  BookOpen,
+  Upload,
+  Code2,
+  Brain,
+  Zap,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { SiteShell } from "@/components/layout/SiteShell";
 import { TiltCard } from "@/components/ui/tilt-card";
@@ -8,7 +18,11 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Solvix — Entdecke, teile und baue Coding- & KI-Projekte" },
-      { name: "description", content: "Solvix ist eine moderne Community für Coding, KI und SaaS. Entdecke echte Projekte, lade eigene hoch, stelle Fragen und lerne mit anderen." },
+      {
+        name: "description",
+        content:
+          "Solvix ist eine moderne Community für Coding, KI und SaaS. Entdecke echte Projekte, lade eigene hoch, stelle Fragen und lerne mit anderen.",
+      },
       { property: "og:title", content: "Solvix — Entdecke, teile und baue Coding- & KI-Projekte" },
       { property: "og:description", content: "Eine moderne Community für Coding, KI und SaaS." },
     ],
@@ -36,7 +50,11 @@ function Home() {
               Projekten inspirieren lassen wollen.
             </p>
             <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
-              <Button asChild size="lg" className="bg-gradient-primary shadow-glow hover:opacity-90">
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-primary shadow-glow hover:opacity-90"
+              >
                 <Link to="/projects">
                   Projekte entdecken <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
@@ -60,8 +78,8 @@ function Home() {
               Warum Coding und KI heute zählen
             </h2>
             <p className="mt-3 text-muted-foreground">
-              Die Werkzeuge sind da. Was fehlt, sind Ideen, Übung und eine Community,
-              die zeigt, was wirklich möglich ist.
+              Die Werkzeuge sind da. Was fehlt, sind Ideen, Übung und eine Community, die zeigt, was
+              wirklich möglich ist.
             </p>
           </div>
 
@@ -97,15 +115,39 @@ function Home() {
                 Eine Plattform. Drei Wege, dich einzubringen.
               </h2>
               <p className="mt-3 text-muted-foreground">
-                Entdecke fertige Projekte, lade eigene hoch oder frage die Community —
-                alles an einem Ort, sauber und übersichtlich.
+                Entdecke fertige Projekte, lade eigene hoch oder frage die Community — alles an
+                einem Ort, sauber und übersichtlich.
               </p>
             </div>
             <div className="grid gap-4">
-              <Step icon={<Rocket className="h-5 w-5" />} title="Projekte entdecken" desc="Filtere nach KI, Webentwicklung, SaaS, Automatisierung und mehr." to="/projects" delay={0} />
-              <Step icon={<Upload className="h-5 w-5" />} title="Projekt hochladen" desc="Teile, was du gebaut hast — inkl. Tech-Stack, Lernpunkte und Demo." to="/upload-project" delay={80} />
-              <Step icon={<MessageCircleQuestion className="h-5 w-5" />} title="Frage stellen" desc="Stuck? Stelle Coding- oder KI-Fragen, andere helfen weiter." to="/questions" delay={160} />
-              <Step icon={<BookOpen className="h-5 w-5" />} title="Lernen" desc="Einfache Einführung in Coding, KI, APIs, Python, JavaScript & Co." to="/learn" delay={240} />
+              <Step
+                icon={<Rocket className="h-5 w-5" />}
+                title="Projekte entdecken"
+                desc="Filtere nach KI, Webentwicklung, SaaS, Automatisierung und mehr."
+                to="/projects"
+                delay={0}
+              />
+              <Step
+                icon={<Upload className="h-5 w-5" />}
+                title="Projekt hochladen"
+                desc="Teile, was du gebaut hast — inkl. Tech-Stack, Lernpunkte und Demo."
+                to="/upload-project"
+                delay={80}
+              />
+              <Step
+                icon={<MessageCircleQuestion className="h-5 w-5" />}
+                title="Frage stellen"
+                desc="Stuck? Stelle Coding- oder KI-Fragen, andere helfen weiter."
+                to="/questions"
+                delay={160}
+              />
+              <Step
+                icon={<BookOpen className="h-5 w-5" />}
+                title="Lernen"
+                desc="Einfache Einführung in Coding, KI, APIs, Python, JavaScript & Co."
+                to="/learn"
+                delay={240}
+              />
             </div>
           </div>
         </div>
@@ -119,11 +161,15 @@ function Home() {
               Bereit, dein nächstes Projekt zu zeigen?
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-muted-foreground">
-              Erstelle einen kostenlosen Account und veröffentliche dein erstes Projekt in
-              wenigen Minuten.
+              Erstelle einen kostenlosen Account und veröffentliche dein erstes Projekt in wenigen
+              Minuten.
             </p>
             <div className="mt-6 flex justify-center gap-3">
-              <Button asChild size="lg" className="bg-gradient-primary shadow-glow hover:opacity-90">
+              <Button
+                asChild
+                size="lg"
+                className="bg-gradient-primary shadow-glow hover:opacity-90"
+              >
                 <Link to="/auth">Kostenlos starten</Link>
               </Button>
               <Button asChild size="lg" variant="outline">
@@ -137,7 +183,17 @@ function Home() {
   );
 }
 
-function FeatureCard({ icon, title, desc, delay = 0 }: { icon: React.ReactNode; title: string; desc: string; delay?: number }) {
+function FeatureCard({
+  icon,
+  title,
+  desc,
+  delay = 0,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  delay?: number;
+}) {
   return (
     <TiltCard delay={delay} className="rounded-xl">
       <div className="group h-full rounded-xl border border-border bg-card p-6 shadow-card-elegant transition-colors hover:border-primary/40">
@@ -151,7 +207,19 @@ function FeatureCard({ icon, title, desc, delay = 0 }: { icon: React.ReactNode; 
   );
 }
 
-function Step({ icon, title, desc, to, delay = 0 }: { icon: React.ReactNode; title: string; desc: string; to: string; delay?: number }) {
+function Step({
+  icon,
+  title,
+  desc,
+  to,
+  delay = 0,
+}: {
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+  to: string;
+  delay?: number;
+}) {
   return (
     <TiltCard delay={delay} max={5} className="rounded-xl">
       <Link
