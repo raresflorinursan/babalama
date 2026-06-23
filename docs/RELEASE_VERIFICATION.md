@@ -72,3 +72,12 @@ Aktuellster Live-Migrationsstand:
 - Vercel Production Environment Variables vergleichen
 - Impressum, Datenschutz und Nutzungsbedingungen freigeben
 - nach dem GitHub-Push das Vercel-Deployment und zentrale Live-Routen pruefen
+
+## Deployment-Nachweis
+
+Am 23. Juni 2026 wurde Commit `612ff74` auf GitHub `main` veroeffentlicht.
+Vercel liefert die dazugehoerigen Build-Assets `index-CJnlVVHN.js` und
+`styles-XtenbxMY.css` aus. Startseite, Lernen, Community, Auth und Projekte
+wurden live ohne Anwendungs- oder Konsolenfehler geprueft. Geschuetzte
+Projektbearbeitung leitet anonyme Nutzer korrekt zu `/auth` weiter; die
+404-Wiederherstellung ist erreichbar.

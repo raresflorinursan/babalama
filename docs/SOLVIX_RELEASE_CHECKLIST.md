@@ -94,8 +94,8 @@ Status: In Arbeit
 - [x] TypeScript gegen die live generierten Supabase-Typen pruefen
 - [x] Vollstaendige Desktop-, Mobil- und WCAG-Browsertests ausfuehren
 - [x] Vollstaendigen finalen Lint-, TypeScript-, Test-, Audit- und Build-Lauf ausfuehren
-- [ ] Geprueften Stand committen und auf GitHub `main` pushen
-- [ ] Vercel-Produktionsdeployment und Live-Routen kontrollieren
+- [x] Geprueften Stand committen und auf GitHub `main` pushen
+- [x] Vercel-Produktionsdeployment und Live-Routen kontrollieren
 
 ## Phase 5: Public Beta
 
